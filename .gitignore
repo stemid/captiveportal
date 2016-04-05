@@ -1,0 +1,7 @@
+.*.swp
+.*.swo
+*.pyc
+build/
+dist/
+*.egg-info
+keep_local.cfg
