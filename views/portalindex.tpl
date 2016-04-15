@@ -13,34 +13,41 @@
 
   <link rel="stylesheet" href="/static/css/normalize.css">
   <link rel="stylesheet" href="/static/css/skeleton.css">
+  <link rel="stylesheet" href="/static/css/captiveportal.css">
 
 </head>
 <body>
 
   <div class="container">
     <div class="row">
-      <div class="six columns" style="margin-top: 15%">
+      <div class="six columns" style="margin-top: 10%">
         <h4>End User Agreement</h4>
 
         <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
 
         <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
-
-        <form id="approveForm">
-          <div class="row">
-            <div class="three columns">
-              <label for="approveSend"></label>
-              <input class="button-primary" value="Approve" type="submit">
-            </div>
-          </div>
-        </form>
-
       </div>
     </div>
+
+    <form id="approveForm" method="post">
+      <div class="row">
+        <div class="four columns">
+          <label>
+            <input type="checkbox" id="approveCheckbox" required> I approve this user agreement
+          </label>
+        </div>
+        <div id="approveButtonDiv" class="one column u-pull-left">
+          <label>
+            <input id="approveButton" class="button-primary" value="Approve" type="submit">
+          </label>
+        </div>
+      </div>
+    </form>
+
   </div>
 
   <script src="https://code.jquery.com/jquery-1.12.2.min.js"></script>
-  <script src="/static/js/portal.js"></script>
+  <script src="/static/js/captiveportal.js"></script>
 
 </body>
 </html>

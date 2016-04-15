@@ -1,0 +1,9 @@
+.button-loading {
+  background: #80c8ff url('/static/images/loader.gif') no-repeat 80% 80%;
+  cursor: default;
+}
+
+#approveButtonDiv img {
+  height: 100px;
+  width: 100px;
+}
