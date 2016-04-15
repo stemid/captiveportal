@@ -14,4 +14,4 @@ There is a sample plugin called logging.py. Plugins are merely rq jobs that are 
 
 # RQ worker
 
-  rq worker -u redis://127.0.0.1:6379/
+    rq worker -u redis://127.0.0.1:6379/
