@@ -2,6 +2,7 @@
 
 import json
 from pprint import pprint
+from uuid import UUID
 from importlib import import_module
 from configparser import RawConfigParser
 from logging import Formatter, getLogger, DEBUG, WARN, INFO
@@ -9,7 +10,7 @@ from logging.handlers import SysLogHandler, RotatingFileHandler
 
 from redis import Redis
 from rq import Queue
-from bottle import route, run, default_app
+from bottle import Bottle, default_app
 from bottle import request, response, template, static_file
 
 config = RawConfigParser()
@@ -62,25 +63,17 @@ R = Redis(
 )
 
 
-@route('/')
-def portalindex():
-    return template('portalindex')
+# Custom UUID route filter for bottle.py
+def uuid_filter(config):
+    regexp = r'[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}'
 
+    def to_python(match):
+        return UUID(match, version=4)
 
-@route('/static/<path:path>')
-def server_static(path):
-    return static_file(path, root='./static')
+    def to_url(uuid):
+        return str(uuid)
 
-
-@route('/approve', method='POST')
-def approve_client():
-    response.content_type = 'application/json'
-    jobs = dispatch_plugins()
-
-    # TODO: return job ID
-    # Maybe use the client IP as job ID to enable easier lookups of the job
-    # status.
-    return json.dumps(jobs)
+    return regexp, to_python, to_url
 
 
 # Add plugins to job queue
@@ -115,14 +108,60 @@ def dispatch_plugins():
             ))
             continue
 
-        jobs.append(plugin_job)
+        pprint(plugin_job)
+        jobs.append(plugin_job.id)
+
+    return jobs
+
+
+# Define app so we can add a custom filter
+app = Bottle()
+app.router.add_filter('uuid', uuid_filter)
+
+
+@app.route('/')
+def portalindex():
+    return template('portalindex')
+
+
+@app.route('/static/<path:path>')
+def server_static(path):
+    return static_file(path, root='./static')
+
+
+@app.route('/job/<job_id:uuid>')
+def job_status(job_id):
+    Q = Queue(connection=R)
+    job = Q.fetch_job(str(job_id))
+    if not job:
+        response.status_code = 404
+        return json.dumps({'error': 'Job not found'})
+
+    # Get data on the job to return to the client
+    job_data = {
+        'id': job.id,
+        'is_failed': job.is_failed,
+        'is_finished': job.is_finished,
+        'is_queued': job.is_queued,
+        'is_started': job.is_started
+    }
+
+    return json.dumps(job_data)
+
+
+@app.route('/approve', method='POST')
+def approve_client():
+    response.content_type = 'application/json'
+    jobs = dispatch_plugins()
+
+    return json.dumps(jobs)
 
 
 if __name__ == '__main__':
-    run(
+    app.run(
         host=config.get('portal', 'listen_host'),
         port=config.getint('portal', 'listen_port')
     )
     debug(config.getbool('portal', 'debug'))
 else:
-    application = default_app()
+    application = app
