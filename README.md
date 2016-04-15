@@ -1,8 +1,17 @@
 # Captive Portal
 
-This is supposed to be a captive portal webpage. 
-
 Work in progress right now. 
+
+Captive portal webpage written with simplicity in mind. 
+
+  - Present a webpage to the user
+  - Users submits a form
+  - Plugins are executed with form data
+  - User is granted access to whatever treasure the portal is guarding
+
+This is a commonly seen setup in public Wifi networks or hotspots. 
+
+This app was specifically written for such a hotspot and as such requires a lot of other configuration around it. This is an ongoing [documentation project here](http://wiki.sydit.se/teknik:guider:captive_portal_med_iptables).
 
 # Plugins
 
