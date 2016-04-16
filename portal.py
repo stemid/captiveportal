@@ -102,6 +102,10 @@ def dispatch_plugins():
             if isinstance(value, (int, str, float, dict, set, tuple)):
                 arg['environ'][key] = value
 
+        # Import all the plugin configuration values as OrderedDict
+        config_sections = plugin_config._sections
+        arg['config'] = config_sections[plugin]
+
         # Import the plugin
         try:
             plugin_module = import_module('plugins.'+plugin)
