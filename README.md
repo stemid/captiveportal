@@ -21,6 +21,11 @@ Plugins accept data from the request of the user, as of writing this is only wsg
 
 There is a sample plugin called logging.py. Plugins are merely rq jobs that are executed by an rq worker. As such they can only be so complex.
 
-# RQ worker
+# Get started
+
+    python setup.py install
+    python portal.py
+
+## RQ worker
 
     rq worker -u redis://127.0.0.1:6379/
