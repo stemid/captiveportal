@@ -24,6 +24,7 @@ def run(arg):
         client_ip=environ.get(
             'HTTP_X_FORWARDED_FOR',
             environ.get('REMOTE_ADDR')
+        )
     )
 
     # Log a msg
