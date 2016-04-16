@@ -5,8 +5,7 @@ from pprint import pprint
 from uuid import UUID
 from importlib import import_module
 
-# Until pyvenv-3.4 is fixed on centos 7 I'll support python 2 with this
-# minor change.
+# Until pyvenv-3.4 is fixed on centos 7 support python 2.
 try:
     from configparser import RawConfigParser
 except ImportError:
@@ -103,7 +102,17 @@ def dispatch_plugins():
             if isinstance(value, (int, str, float, dict, set, tuple)):
                 arg['environ'][key] = value
 
-        plugin_module = import_module('plugins.'+plugin)
+        # Import the plugin
+        try:
+            plugin_module = import_module('plugins.'+plugin)
+        except Exception as e:
+            l.warn('{plugin}: failed import: {error}'.format(
+                plugin=plugin,
+                error=str(e)
+            ))
+            continue
+
+        # Run plugin.run()
         try:
             plugin_job = Q.enqueue(
                 plugin_module.run,
@@ -111,13 +120,12 @@ def dispatch_plugins():
                 ttl=config.getint('portal', 'plugin_ttl')
             )
         except Exception as e:
-            l.error('{plugin}: {error}'.format(
+            l.warn('{plugin}: {error}'.format(
                 error=str(e),
                 plugin=plugin
             ))
             continue
 
-        pprint(plugin_job)
         jobs.append(plugin_job.id)
 
     return jobs
