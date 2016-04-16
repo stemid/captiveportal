@@ -9,7 +9,7 @@ def run(arg):
     # like io streams.
     environ = arg['environ']
 
-    l = getLogger('plugin_logging')
+    l = getLogger('plugin_log')
     l.addHandler(logHandler)
     l.setLevel(DEBUG)
 
