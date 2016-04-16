@@ -25,7 +25,10 @@ def run(arg):
     l.addHandler(logHandler)
     l.setLevel(DEBUG)
 
-    client_ip = environ.get('REMOTE_ADDR')
+    client_ip = environ.get(
+        'HTTP_X_FORWARDED_FOR',
+        environ.get('REMOTE_ADDR')
+    )
     client_mac = None
     error_msg = None
     iptables_failed = False
