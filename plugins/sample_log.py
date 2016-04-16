@@ -21,7 +21,9 @@ def run(arg):
     )
 
     log_client = '{client_ip}'.format(
-        client_ip=environ.get('REMOTE_ADDR')
+        client_ip=environ.get(
+            'HTTP_X_FORWARDED_FOR',
+            environ.get('REMOTE_ADDR')
     )
 
     # Log a msg
