@@ -4,8 +4,15 @@ import json
 from pprint import pprint
 from uuid import UUID
 from importlib import import_module
-from configparser import RawConfigParser
-from logging import Formatter, getLogger, DEBUG, WARN, INFO
+
+# Until pyvenv-3.4 is fixed on centos 7 I'll support python 2 with this
+# minor change.
+try:
+    from configparser import RawConfigParser
+except ImportError:
+    from ConfigParser import RawConfigParser
+
+from logging import Formatter, getLogger, DEBUG, INFO, WARN
 from logging.handlers import SysLogHandler, RotatingFileHandler
 
 from redis import Redis
@@ -65,6 +72,7 @@ R = Redis(
 
 # Custom UUID route filter for bottle.py
 def uuid_filter(config):
+    # Should catch UUIDv4 type strings
     regexp = r'[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}'
 
     def to_python(match):
@@ -99,7 +107,8 @@ def dispatch_plugins():
         try:
             plugin_job = Q.enqueue(
                 plugin_module.run,
-                arg
+                arg,
+                ttl=config.getint('portal', 'plugin_ttl')
             )
         except Exception as e:
             l.error('{plugin}: {error}'.format(
@@ -114,27 +123,31 @@ def dispatch_plugins():
     return jobs
 
 
-# Define app so we can add a custom filter
+# Define app so we can add a custom filter to app.router
 app = Bottle()
 app.router.add_filter('uuid', uuid_filter)
 
 
 @app.route('/')
 def portalindex():
-    return template('portalindex')
+    return template(
+        'portalindex',
+        plugin_ttl=config.get('portal', 'plugin_ttl')
+    )
 
 
 @app.route('/static/<path:path>')
 def server_static(path):
-    return static_file(path, root='./static')
+    return static_file(path, root=config.get('portal', 'static_dir'))
 
 
 @app.route('/job/<job_id:uuid>')
 def job_status(job_id):
     Q = Queue(connection=R)
     job = Q.fetch_job(str(job_id))
-    if not job:
-        response.status_code = 404
+    response.content_type = 'application/json'
+    if job is None:
+        response.status = 404
         return json.dumps({'error': 'Job not found'})
 
     # Get data on the job to return to the client
@@ -143,7 +156,8 @@ def job_status(job_id):
         'is_failed': job.is_failed,
         'is_finished': job.is_finished,
         'is_queued': job.is_queued,
-        'is_started': job.is_started
+        'is_started': job.is_started,
+        'result': job.result
     }
 
     return json.dumps(job_data)
