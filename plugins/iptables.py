@@ -23,7 +23,8 @@ def run(arg):
     # Setup plugin logging
     l = getLogger('plugin_iptables')
     l.addHandler(logHandler)
-    l.setLevel(DEBUG)
+    if config.get('debug', False):
+        l.setLevel(DEBUG)
 
     client_ip = environ.get(
         'HTTP_X_FORWARDED_FOR',
@@ -63,6 +64,13 @@ def run(arg):
         error = BytesIO()
         try:
             rc = sudo.iptables(iptables_mac, _out=output, _err=error)
+
+            if rc.exit_code == 0:
+                l.debug('Created iptables MAC rule successfully')
+                return {
+                    'error': error_msg,
+                    'failed': False
+                }
         except ErrorReturnCode:
             error.seek(0)
             error_msg = error.read()
@@ -96,6 +104,13 @@ def run(arg):
         error = BytesIO()
         try:
             rc = sudo.iptables(iptables_ip, _out=output, _err=error)
+
+            if rc.exit_code == 0:
+                l.debug('Created iptables IP rule successfully')
+                return {
+                    'error': error_msg,
+                    'failed': False
+                }
         except ErrorReturnCode:
             error.seek(0)
             error_msg = error.read()
