@@ -108,6 +108,9 @@ def dispatch_plugins():
 
         # Is plugin enabled?
         if not plugin_config.getboolean(plugin, 'enabled'):
+            l.debug('{plugin}: Not enabled, skipping'.format(
+                plugin=plugin
+            ))
             continue
 
         # Import the plugin
