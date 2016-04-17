@@ -11,7 +11,8 @@ def run(arg):
 
     l = getLogger('plugin_log')
     l.addHandler(logHandler)
-    l.setLevel(DEBUG)
+    if config.get('debug', False):
+        l.setLevel(DEBUG)
 
     log_url = '{proto}://{server}:{port}{request}'.format(
         proto=environ.get('wsgi.url_scheme'),
