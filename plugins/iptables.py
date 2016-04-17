@@ -1,8 +1,15 @@
 # Add an iptables rule
 
 import re
+import socket
 from io import BytesIO
 from logging import getLogger, DEBUG, WARN, INFO
+
+try:
+    from congiparser import RawConfigParser
+except ImportError:
+    from ConfigParser import RawConfigParser
+
 from portal import logHandler, logFormatter
 
 # Try to import arping for mac_from_ip()
@@ -18,12 +25,15 @@ from sh import sudo, ErrorReturnCode
 def run(arg):
     # Some info from the plugin dispatcher.
     environ = arg['environ']
-    config = arg['config']
+    plugin_config = arg['config']
+
+    config = RawConfigParser(defaults=plugin_config)
+    config.add_section(plugin_config.get('__name__', 'iptables'))
 
     # Setup plugin logging
     l = getLogger('plugin_iptables')
     l.addHandler(logHandler)
-    if config.get('debug', False):
+    if config.getboolean('iptables', 'debug', False):
         l.setLevel(DEBUG)
 
     client_ip = environ.get(
@@ -34,11 +44,21 @@ def run(arg):
     error_msg = None
     iptables_failed = False
 
+    # Verify IP
+    try:
+        socket.inet_aton(client_ip)
+    except socket.error:
+        l.error('Client IP-address is invalid')
+        return {
+            'error': str(e),
+            'failed': True
+        }
+
     # Attempt to get client HW address first.
     try:
         client_mac = mac_from_ip(
             l,
-            config.get('arping'),
+            config.get('iptables', 'arping'),
             client_ip
         )
     except Exception as e:
@@ -55,7 +75,7 @@ def run(arg):
         ))
 
         # Create tuple out of iptables command
-        iptables_mac = config.get('iptables_mac').format(
+        iptables_mac = config.get('iptables', 'iptables_mac').format(
             mac_address=client_mac
         )
         iptables_mac = tuple(iptables_mac.split(' '))
@@ -95,7 +115,7 @@ def run(arg):
             ip=client_ip
         ))
 
-        iptables_ip = config.get('iptables_ip').format(
+        iptables_ip = config.get('iptables', 'iptables_ip').format(
             ip_address=client_ip
         )
         iptables_ip = tuple(iptables_ip.split(' '))

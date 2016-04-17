@@ -2,16 +2,26 @@
 
 # Sets up logging by importing from the bottle app in the parent dir.
 from logging import getLogger, DEBUG, WARN, INFO
+
+try:
+    from congiparser import RawConfigParser
+except ImportError:
+    from ConfigParser import RawConfigParser
+
 from portal import logHandler, logFormatter
 
 def run(arg):
     # The WSGI environ dict should always be there, sans any special objects
     # like io streams.
     environ = arg['environ']
+    plugin_config = arg['config']
+
+    config = RawConfigParser(defaults=plugin_config)
+    config.add_section(plugin_config.get('__name__', 'sample_log'))
 
     l = getLogger('plugin_log')
     l.addHandler(logHandler)
-    if config.get('debug', False):
+    if config.getboolean('sample_log', 'debug', False):
         l.setLevel(DEBUG)
 
     log_url = '{proto}://{server}:{port}{request}'.format(

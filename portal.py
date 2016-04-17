@@ -104,7 +104,11 @@ def dispatch_plugins():
 
         # Import all the plugin configuration values as OrderedDict
         config_sections = plugin_config._sections
-        arg['config'] = config_sections[plugin]
+        arg['config'] = dict(config_sections[plugin])
+
+        # Is plugin enabled?
+        if not plugin_config.getboolean(plugin, 'enabled'):
+            continue
 
         # Import the plugin
         try:
