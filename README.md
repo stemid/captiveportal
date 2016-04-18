@@ -19,7 +19,9 @@ Plugins are executed when the user clicks through the captive portal form, wheth
 
 Plugins accept data from the request of the user, as of writing this is only wsgi environ data. 
 
-There is a sample plugin called logging.py. Plugins are merely rq jobs that are executed by an rq worker. As such they can only be so complex.
+Sample plugins prefixed with sample\_ are a good starting point for understanding the plugins. 
+
+Plugins can be made mandatory, or skipped by being disabled, see plugins.cfg for more configuration.
 
 # Get started
 
@@ -29,3 +31,7 @@ There is a sample plugin called logging.py. Plugins are merely rq jobs that are 
 ## RQ worker
 
     rq worker -u redis://127.0.0.1:6379/
+
+# Deployment
+
+See examples in docs/examples directory.
