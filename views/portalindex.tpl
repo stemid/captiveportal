@@ -46,6 +46,9 @@
 
   </div>
 
+  <script>
+    var plugin_ttl = {{plugin_ttl}};
+  </script>
   <script src="https://code.jquery.com/jquery-1.12.2.min.js"></script>
   <script src="/static/js/captiveportal.js"></script>
 
