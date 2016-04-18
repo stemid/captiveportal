@@ -28,13 +28,15 @@ def run(arg):
     plugin_config = arg['config']
 
     config = RawConfigParser(defaults=plugin_config)
-    config.add_section(plugin_config.get('__name__', 'iptables'))
+    config.add_section('iptables')
+    config._sections['iptables'] = plugin_config
 
     # Setup plugin logging
     l = getLogger('plugin_iptables')
     l.addHandler(logHandler)
-    if config.getboolean('iptables', 'debug', False):
+    if config.getboolean('iptables', 'debug'):
         l.setLevel(DEBUG)
+        l.debug('debug logging enabled')
 
     client_ip = environ.get(
         'HTTP_X_FORWARDED_FOR',

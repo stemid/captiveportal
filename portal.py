@@ -27,7 +27,7 @@ config.read(['/etc/captiveportal/portal.cfg', './portal_local.cfg'])
 # their section removed/commented from the config file.
 plugin_config = RawConfigParser()
 plugin_config.readfp(open('./plugins.cfg'))
-plugin_config.read(['/etc/captiveportal/plugins.cfg'])
+plugin_config.read(['/etc/captiveportal/plugins.cfg', './plugins_local.cfg'])
 
 # Setup logging
 logFormatter = Formatter(config.get('logging', 'log_format'))
@@ -104,7 +104,7 @@ def dispatch_plugins():
 
         # Import all the plugin configuration values as OrderedDict
         config_sections = plugin_config._sections
-        arg['config'] = dict(config_sections[plugin])
+        arg['config'] = config_sections[plugin]
 
         # Is plugin enabled?
         if not plugin_config.getboolean(plugin, 'enabled'):

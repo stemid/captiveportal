@@ -17,12 +17,14 @@ def run(arg):
     plugin_config = arg['config']
 
     config = RawConfigParser(defaults=plugin_config)
-    config.add_section(plugin_config.get('__name__', 'sample_log'))
+    config.add_section('sample_log')
+    config._sections['sample_log'] = plugin_config
 
     l = getLogger('plugin_log')
     l.addHandler(logHandler)
     if config.getboolean('sample_log', 'debug', False):
         l.setLevel(DEBUG)
+        l.debug('debug logging enabled')
 
     log_url = '{proto}://{server}:{port}{request}'.format(
         proto=environ.get('wsgi.url_scheme'),
