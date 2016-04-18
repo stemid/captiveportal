@@ -1,7 +1,5 @@
 # Captive Portal
 
-Work in progress right now. 
-
 Captive portal webpage written with simplicity in mind. 
 
   - Present a webpage to the user
