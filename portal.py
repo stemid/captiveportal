@@ -175,6 +175,14 @@ def server_static(path):
     return static_file(path, root=config.get('portal', 'static_dir'))
 
 
+@app.route('/jobs')
+def list_jobs():
+    Q = Queue(connection=R)
+    jobs = Q.get_job_ids()
+    response.content_tye = 'application/json'
+    return json.dumps(jobs)
+
+
 @app.route('/job/<job_id:uuid>')
 def job_status(job_id):
     Q = Queue(connection=R)
