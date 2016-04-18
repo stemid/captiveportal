@@ -25,7 +25,12 @@ config.read(['/etc/captiveportal/portal.cfg', './portal_local.cfg'])
 
 # Plugins configuration is separate so plugins can be disabled by having
 # their section removed/commented from the config file.
-plugin_config = RawConfigParser()
+plugin_defaults = {
+    'enabled': 'False',
+    'mandatory': 'True',
+    'debug': 'False'
+}
+plugin_config = RawConfigParser(defaults=plugin_defaults)
 plugin_config.readfp(open('./plugins.cfg'))
 plugin_config.read(['/etc/captiveportal/plugins.cfg', './plugins_local.cfg'])
 
@@ -86,7 +91,7 @@ def uuid_filter(config):
 # Add plugins to job queue
 def dispatch_plugins():
     Q = Queue(connection=R)
-    jobs = []
+    jobs = {}
 
     for plugin in plugin_config.sections():
         l.debug('Loading plugin {plugin}'.format(
@@ -137,7 +142,17 @@ def dispatch_plugins():
             ))
             continue
 
-        jobs.append(plugin_job.id)
+        plugin_meta = {}
+        plugin_meta['mandatory'] = plugin_config.getboolean(
+            plugin,
+            'mandatory'
+        )
+        plugin_job.meta = plugin_meta
+        plugin_job.save()
+
+        jobs[plugin] = {
+            'id': plugin_job.id
+        }
 
     return jobs
 
@@ -176,7 +191,8 @@ def job_status(job_id):
         'is_finished': job.is_finished,
         'is_queued': job.is_queued,
         'is_started': job.is_started,
-        'result': job.result
+        'result': job.result,
+        'meta': job.meta
     }
 
     return json.dumps(job_data)
