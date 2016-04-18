@@ -17,9 +17,12 @@ Plugins are executed when the user clicks through the captive portal form, wheth
 
 Plugins accept data from the request of the user, as of writing this is only wsgi environ data. 
 
+Result of the plugins decide whether the user gets accepted into the portal or not. As such plugins have the potential to do anything from check the users IP against a whitelist to authenticate against a RADIUS server or Active Directory.
+
 Sample plugins prefixed with sample\_ are a good starting point for understanding the plugins. 
 
 Plugins can be made mandatory, or skipped by being disabled, see plugins.cfg for more configuration.
+
 
 # Get started
 
