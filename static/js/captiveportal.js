@@ -3,6 +3,8 @@
 //
 //
 
+var debug = true;
+
 // This function ensures the user gets redirect to the correct destination once
 // all jobs have succeeded in the portal software.
 function do_success() {
@@ -14,9 +16,9 @@ function do_success() {
 function do_error(message) {
     $('#error-row').show();
     $('#form-row').hide();
-    $('#error-msg').val('Failed. Reload page and try again or contact support. ');
+    $('#error-message').val('Failed. Reload page and try again or contact support. ');
     if (message) {
-        $('#error-msg').append('System response: '+message);
+        $('#error-message').append('System response: '+message);
     }
 }
 
@@ -24,13 +26,21 @@ function do_error(message) {
 function poll_jobs(data) {
     var promises = [];
 
+    if(debug) {
+        console.log('Jobs data: ', data);
+    }
+
     // Push promises into array
     for(var job in data) {
         var job_id = data[job].id;
         var api_url = '/job/'+job_id;
 
+        if (debug) {
+            console.log('Processing job: ', data[job]);
+        }
+
         promises.push(new Promise(function(resolve, reject) {
-            var maxRun = 3;
+            var maxRun = plugin_ttl/2;
             var timesRun = 0;
 
             // Timer function that polls the API for job results
@@ -39,8 +49,17 @@ function poll_jobs(data) {
                 ajaxReq.done(function(getResponse) {
                     // Verify job data
                     var job_result = getResponse;
+
+                    if (debug) {
+                        console.log('Job results: ', job_result);
+                    }
+
+                    console.log(job_result);
                     if(job_result.is_finished) {
-                        resolve(job_result.result);
+                        console.log('Resolving job: ', job_result.id);
+                        resolve(job_result);
+                        clearTimeout(timer);
+                        return;
                     }
                 });
 
@@ -53,6 +72,7 @@ function poll_jobs(data) {
                 if (++timesRun == maxRun) {
                     clearTimeout(timer);
                     reject("Job polling timed out");
+                    return;
                 } else {
                     timer = setTimeout(pollJob, 2000);
                 }
@@ -64,9 +84,20 @@ function poll_jobs(data) {
 
     // Run .all() on promises array until all promises resolve
     Promise.all(promises).then(function(result) {
-        if(result.failed) {
-            do_error(result.error);
-        } else {
+        var success = true;
+
+        for(var i=0;i<result.length;i++) {
+            console.log('Job result: ', result[i]);
+            var r = result[i].result;
+            var m = result[i].meta;
+            if (r.failed && m.mandatory) {
+                do_error(r.error);
+                success = false;
+                break;
+            }
+        }
+
+        if (success) {
             do_success();
         }
     }, function(reason) {
@@ -79,7 +110,8 @@ $('#approveForm').submit(function (event) {
     var api_url = '/approve';
     event.preventDefault();
 
-    // Had some issues trying to set a background image on the button.
+    // Had some issues trying to set a background image on the button, so I'm
+    // just replacing it.
     if ($('#approveCheckbox').is(':checked')) {
         $('#approveButton').prop('disabled', true);
         $('#approveButton').val('');
@@ -92,6 +124,7 @@ $('#approveForm').submit(function (event) {
 
         ajaxReq.fail(function(XMLHttpRequest, textStatus, errorThrown) {
             console.log('Request Error: '+ XMLHttpRequest.responseText + ', status:' + XMLHttpRequest.status + ', status text: ' + XMLHttpRequest.statusText);
+            do_error(XMLHttpRequest.responseText);
         });
     }
 });
