@@ -6,7 +6,7 @@ from io import BytesIO
 from logging import getLogger, DEBUG, WARN, INFO
 
 try:
-    from congiparser import RawConfigParser
+    from configparser import RawConfigParser
 except ImportError:
     from ConfigParser import RawConfigParser
 
