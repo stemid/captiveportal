@@ -7,3 +7,12 @@
   height: 100px;
   width: 100px;
 }
+
+.msgbox {
+  border-radius: 25px;
+  padding: 15px;
+}
+
+.msgbox-error {
+  background: #ff4000;
+}

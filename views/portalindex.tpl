@@ -19,6 +19,14 @@
 <body>
 
   <div class="container">
+    <noscript>
+      <div class="row">
+        <div class="six columns msgbox msgbox-error" style="margin-top: 2%;">
+          <p>Denna sidan kräver Javascript, du måste aktivera Javascript i din webbläsare för att fortsätta.</p>
+        </div>
+      </div>
+    </noscript>
+
     <div class="row">
       <div class="six columns" style="margin-top: 10%">
         <h4>End User Agreement</h4>
@@ -30,7 +38,13 @@
     </div>
 
     <form id="approveForm" method="post">
-      <div class="row">
+      <div id="error-row" class="row" style="visibility:hidden;">
+        <div class="five columns msgbox msgbox-error">
+          <p id="error-message"></p>
+        </div>
+      </div>
+
+      <div id="form-row" class="row">
         <div class="four columns">
           <label>
             <input type="checkbox" id="approveCheckbox" required> I approve this user agreement
