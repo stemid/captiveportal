@@ -22,7 +22,7 @@ def run(arg):
 
     l = getLogger('plugin_log')
     l.addHandler(logHandler)
-    if config.getboolean('sample_log', 'debug', False):
+    if config.getboolean('sample_log', 'debug'):
         l.setLevel(DEBUG)
         l.debug('debug logging enabled')
 
