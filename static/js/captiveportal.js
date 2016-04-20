@@ -10,7 +10,8 @@ var debug = true;
 function do_success() {
     console.log('success: '+window.location);
     // Do something like refresh the window or go to another URL.
-    location.reload();
+    window.location = window.href;
+    location.reload(true);
 }
 
 // Show an error to the user
@@ -62,6 +63,12 @@ function poll_jobs(data) {
                         clearTimeout(timer);
                         return;
                     }
+
+                    if(job_result.is_failed) {
+                        console.log('Job failed: ', job_result.id);
+                        reject(job_result);
+                        clearTimeout(timer);
+                        return;
                 });
 
                 ajaxReq.fail(function(XMLHttpRequest, textStatus, errorThrown) {
