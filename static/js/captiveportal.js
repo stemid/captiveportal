@@ -10,6 +10,7 @@ var debug = true;
 function do_success() {
     console.log('success: '+window.location);
     // Do something like refresh the window or go to another URL.
+    location.reload();
 }
 
 // Show an error to the user
