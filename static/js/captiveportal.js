@@ -9,6 +9,7 @@ var debug = true;
 // all jobs have succeeded in the portal software.
 function do_success() {
     console.log('success: '+window.location);
+
     // Do something like refresh the window or go to another URL.
     window.location = window.href;
     location.reload(true);
@@ -16,11 +17,13 @@ function do_success() {
 
 // Show an error to the user
 function do_error(message) {
-    $('#error-row').show();
+    console.log('failure: '+message);
+
+    $('#error-box').show();
     $('#form-row').hide();
-    $('#error-message').val('Failed. Reload page and try again or contact support. ');
+    $('#error-box').append('<p>Failed. Reload page and try again or contact support.</p> ');
     if (message) {
-        $('#error-message').append('System response: '+message);
+        $('#error-box').append('<p>System response: '+message+'</p>');
     }
 }
 
@@ -61,14 +64,15 @@ function poll_jobs(data) {
                         console.log('Resolving job: ', job_result.id);
                         resolve(job_result);
                         clearTimeout(timer);
-                        return;
+                        return(true);
                     }
 
                     if(job_result.is_failed) {
                         console.log('Job failed: ', job_result.id);
                         reject(job_result);
                         clearTimeout(timer);
-                        return;
+                        return(false);
+                    }
                 });
 
                 ajaxReq.fail(function(XMLHttpRequest, textStatus, errorThrown) {
@@ -112,6 +116,12 @@ function poll_jobs(data) {
         do_error(reason);
     });
 }
+
+
+$(document).ready(function() {
+    $('#error-box').hide();
+});
+
 
 // Submit the form
 $('#approveForm').submit(function (event) {

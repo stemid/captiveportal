@@ -9,10 +9,12 @@
 }
 
 .msgbox {
-  border-radius: 25px;
-  padding: 15px;
+	border: 1px solid;
+	margin: 10px 0px;
+	padding:15px 10px 15px 25px;
 }
 
 .msgbox-error {
-  background: #ff4000;
+	color: #D8000C;
+	background-color: #FFBABA;
 }

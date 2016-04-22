@@ -38,9 +38,8 @@
     </div>
 
     <form id="approveForm" method="post">
-      <div id="error-row" class="row" style="visibility:hidden;">
-        <div class="five columns msgbox msgbox-error">
-          <p id="error-message"></p>
+      <div class="row">
+        <div id="error-box" class="five columns msgbox msgbox-error">
         </div>
       </div>
 
