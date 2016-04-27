@@ -140,7 +140,7 @@
           <ul class="help-menu">
               <li class="speech"><a class="activate-speech" title="Listen" href="#">Listen</a></li>
               <li class="print hide-on-handheld-land"><a class="print-page" title="Print page" href="#">Print page</a></li>
-              <li><a title="English" href="/#/Swedish">Swedish</a></li>
+              <li><a title="Swedish" href="/#/Swedish">Swedish</a></li>
           </ul>
       </nav>
       <h1 role="heading" class="title">End user agreement</h1>
