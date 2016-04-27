@@ -165,7 +165,7 @@ app.router.add_filter('uuid', uuid_filter)
 @app.route('/')
 def portalindex():
     return template(
-        'portalindex',
+        config.get('portal', 'index_page'),
         plugin_ttl=config.get('portal', 'plugin_ttl')
     )
 
