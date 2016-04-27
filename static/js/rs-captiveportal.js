@@ -124,10 +124,12 @@ app.config(function($routeProvider) {
     $routeProvider
         .when('/Swedish', {templateUrl: "swedish.html" })
         .when('/English', {templateUrl: "english.html" })
+        .when('/FAQ-Swedish', {templateUrl: "faq-swe.html" })
         .otherwise({redirectTo: '/Swedish'});
 });
 
 app.controller('RSMainCtrl', function($scope) {
+    console.log('hejsan i Ctrl');
     $(document).ready(function() {
         $('#error-box').hide();
     });

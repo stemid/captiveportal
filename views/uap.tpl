@@ -53,11 +53,11 @@
                 </ul>
 
                 <ul id="mobile-nav-list">
-                    <li><a title="Hem" href="/">Hem</a></li>
+                    <li><a title="Hem" href="/#/">Hem</a></li>
                 </ul>
 
                 <ul id="main-nav-list">
-                    <li><a href="/">Hem</a></li>
+                    <li><a href="/#/">Hem</a></li>
                 </ul>
             </nav>
         </div>
@@ -96,6 +96,7 @@
           <ul class="help-menu">
               <li class="speech"><a class="activate-speech" title="Lyssna" href="#">Lyssna</a></li>
               <li class="print hide-on-handheld-land"><a class="print-page" title="Skriv ut" href="#">Skriv ut</a></li>
+							<li><a title="Vanliga frågor" href="/#/FAQ-Swedish">Vanliga frågor</a></li>
               <li><a title="English" href="/#/English">English</a></li>
           </ul>
       </nav>
@@ -160,6 +161,48 @@
             </div>
           </div>
         </form>
+
+      </div>
+
+      <section class="articlepage-section block-section"></section>
+  </article>
+</script>
+
+<script type="text/ng-template" id="faq-swe.html">
+  <article role="article">
+      <div class="article-img-container">
+      </div>
+      <nav class="header-nav">
+          <ul class="help-menu">
+              <li class="speech"><a class="activate-speech" title="Listen" href="#">Listen</a></li>
+              <li class="print hide-on-handheld-land"><a class="print-page" title="Print page" href="#">Print page</a></li>
+              <li><a title="Swedish" href="/#/Swedish">Swedish</a></li>
+          </ul>
+      </nav>
+      <h1 role="heading" class="title">Vanliga frågor</h1>
+      <div class="body">
+
+				<h2>Vad behöver jag för att komma åt Internet?</h2>
+				<p>En bärbar dator, läsplatta, smartphone eller en annan enhet med antingen ett externt WiFi-kort (kort för trådlös uppkoppling) eller inbyggt WiFi-kort. Detta trådlösa nät stödjer både 802.11a,802.11b, 802.11g och 802.11n standard.</p>
+				<h2>Hur kan jag koppla upp mig mot det trådlösa nätverket?</h2>
+				<p>De flesta enheter har en auto-sök funktion som bör hitta det trådlösa nätverket inom några minuter efter du startat den. Om så inte sker kan Du söka efter   nätverket Region Skane publikt. </p>
+
+				<p>Öppna sedan en Internetläsare (t.ex. Internet explorer eller Firefox) och gå till valfri sida. Du kommer då se en välkomstsida.</p>
+				<h2>Hur säker är Internetuppkopplingen?</h2>
+				<p>Eftersom detta är ett publikt nätverk så används inte någon kryptering. Du bör därför se till att använda samma försiktighetsåtgärder som rekommenderas av   din bredbandsleverantör. För bästa skydd, använd gärna anti-virusprogram och brandvägg på din Enhet.</p>
+				<h2>Cookies</h2>
+				<p>Region Skånes Publika Gästnät använder sig av cookies för att ge åtkomst till Internet. För att komma ut på Internet måste du därför
+				tillåta cookies i din webläsare. För mer information se
+				<a href="http://www.skane.se/supportsidor/om-cookies/">Region Skånes information om cookies</a>.<p>
+				<h2>Kan jag använda VPN genom denna Internetuppkoppling</h2>
+				<p>Även om vi har testat flertalet VPN-produkter så kan vi inte garantera att alla VPN-klienter kan användas genom denna Internetanslutning. Eftersom denna     anslutning är skyddad av en brandvägg så måste din VPN-klient klara av NAT/PAT för att kunna koppla upp sig mot din VPN-server. Om du har problem eller är osäker på hur  din VPN-klient fungerar, var vänlig kontakta ditt företags IT-avdelning för information och hjälp.</p>
+				<h2>Jag kan inte skicka e-post från denna Internetanslutning. Finns det några inställningar jag kan ändra?</h2>
+				<p>Eftersom denna Internetanslutning tillhandahålls av region Skåne så kan det hända att vissa Internetsidor som innehåller material som har bedömts olämpligt  är spärrade. Om du försöker nå en av dessa sidor så kommer du att bli vidareskickad till en sida som meddelar att denna sida inte är tillgänglig genom det gästnätet. Om  du tror att den sidan du försökte nå är felaktigt spärrad så kan du skicka in URL:en och en kommentar genom länken "Synpunkter" på förstasidan.</p>
+				<h2>Jag behöver mer hjälp. Kan jag kontakta någon på plats eller på telefon?</h2>
+				<p>Vi erbjuder våra användare support via betalnummer på telefon!</p>
+				<p>Supportnummer: 0900-205 25 50<br />
+				<small>Kostnad för support: 19,90 kr/minut (inkl. moms)<br />
+				Öppet 08:00 - 17:00 helgfria vardagar</small></p>
 
       </div>
 
