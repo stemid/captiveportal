@@ -9,7 +9,7 @@ Captive portal webpage written with simplicity in mind.
 
 This is a commonly seen setup in public Wifi networks or hotspots. 
 
-This app was specifically written for such a hotspot and as such requires a lot of other configuration around it. This is an ongoing [documentation project here](http://wiki.sydit.se/teknik:guider:captive_portal_med_iptables).
+This app was specifically written for such a hotspot and as such requires a lot of other configuration around it. This is an ongoing [documentation project here](https://wiki.sydit.se/teknik:guider:networking:captive_portal_med_iptables).
 
 # Plugins
 
