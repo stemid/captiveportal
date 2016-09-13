@@ -3,7 +3,7 @@
 Captive portal webpage written with simplicity in mind. 
 
   - Present a webpage to the user
-  - Users submits a form
+  - User submits a form
   - Plugins are executed with form data
   - User is granted access to whatever treasure the portal is guarding
 
