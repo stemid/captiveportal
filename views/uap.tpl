@@ -23,10 +23,12 @@
 
 </head>
 
-<body ng-app="rsPortalApp"> 
+<body ng-app="rsPortalApp">
     <noscript>
         <div class="container">
-            <p>Javascript verkar inte vara påslaget? - Vissa delar av Region Skånes webbplats fungerar inte optimalt utan javascript, kontrollera din webbläsares inställningar.</p>
+            <p>Javascript verkar inte vara påslaget? -
+              Vissa delar av Region Skånes webbplats fungerar inte optimalt utan
+              javascript, kontrollera din webbläsares inställningar.</p>
         </div>
     </noscript>
     <div id="tab-support-container">
@@ -102,16 +104,26 @@
       </nav>
       <h1 role="heading" class="title">Villkor för tjänsten</h1>
       <div class="body">
-        <p>Region Skåne saknar ansvar för funktionalitet, innehåll och service på Internetsidor vilka användaren kan nå via tjänsten</p>
-        <p>Region Skåne kan ej hållas ansvarig för fel eller skador på användarens utrustning förutom i det fall det uteslutande kan anses bero på Region Skåne</p>
-        <p>Region Skåne kan ej lämna garanti för att tjänsten alltid kommer att fungera säkert utan fördröjning eller avbrott</p>
-        <p>Användaren är ansvarig för att användningen följer lagar och författningar och att den sker på ett etiskt och korrekt sätt</p>
-        <p>Användaren är ansvarig för att användningen sker på ett sätt som inte verkar störande för omgivningen</p>
-        <p>Region Skåne äger rätt att, om ovanstående regler inte respekteras, stänga av eller begränsa användarens åtkomst till Internet</p>
-        <p>Region Skånes Publika Gästnät använder sig av cookies för att ge åtkomst till Internet. För att komma ut på Internet måste du därför
+        <p>Region Skåne saknar ansvar för funktionalitet, innehåll och service
+          på Internetsidor vilka användaren kan nå via tjänsten</p>
+        <p>Region Skåne kan ej hållas ansvarig för fel eller skador på
+          användarens utrustning förutom i det fall det uteslutande kan anses
+          bero på Region Skåne</p>
+        <p>Region Skåne kan ej lämna garanti för att tjänsten alltid kommer att
+          fungera säkert utan fördröjning eller avbrott</p>
+        <p>Användaren är ansvarig för att användningen följer lagar och
+          författningar och att den sker på ett etiskt och korrekt sätt</p>
+        <p>Användaren är ansvarig för att användningen sker på ett sätt som
+          inte verkar störande för omgivningen</p>
+        <p>Region Skåne äger rätt att, om ovanstående regler inte respekteras,
+          stänga av eller begränsa användarens åtkomst till Internet</p>
+        <p>Region Skånes Publika Gästnät använder sig av cookies för att ge
+          åtkomst till Internet. För att komma ut på Internet måste du därför
         tillåta cookies i din webläsare. För mer information se
         <a href="http://www.skane.se/supportsidor/om-cookies/">Region Skånes information om cookies</a>.<p>
-        <p>När du använder dig av Region Skånes internet är det viktigt att följa regler ex. förbudskyltar som gäller användning av enheter i närheten Medicinteknisk utrustning, då denna kan störas.</p>
+        <p>När du använder dig av Region Skånes internet är det viktigt att
+          följa regler ex. förbudskyltar som gäller användning av enheter i
+          närheten Medicinteknisk utrustning, då denna kan störas.</p>
 
         <form id="approveForm" method="post">
           <div class="static-form-block">
@@ -146,7 +158,15 @@
       </nav>
       <h1 role="heading" class="title">End user agreement</h1>
       <div class="body">
-        <p>More here later. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+        <p>More here later. Lorem Ipsum is simply dummy text of the printing and
+          typesetting industry. Lorem Ipsum has been the industry's standard
+          dummy text ever since the 1500s, when an unknown printer took a galley
+          of type and scrambled it to make a type specimen book. It has survived
+          not only five centuries, but also the leap into electronic typesetting,
+          remaining essentially unchanged. It was popularised in the 1960s with
+          the release of Letraset sheets containing Lorem Ipsum passages, and more
+          recently with desktop publishing software like Aldus PageMaker including
+          versions of Lorem Ipsum.</p>
 
         <form id="approveForm" method="post">
           <div class="static-form-block">
@@ -183,21 +203,44 @@
       <div class="body">
 
 				<h2>Vad behöver jag för att komma åt Internet?</h2>
-				<p>En bärbar dator, läsplatta, smartphone eller en annan enhet med antingen ett externt WiFi-kort (kort för trådlös uppkoppling) eller inbyggt WiFi-kort. Detta trådlösa nät stödjer både 802.11a,802.11b, 802.11g och 802.11n standard.</p>
+				<p>En bärbar dator, läsplatta, smartphone eller en annan enhet med antingen
+          ett externt WiFi-kort (kort för trådlös uppkoppling) eller inbyggt
+          WiFi-kort. Detta trådlösa nät stödjer både 802.11a,802.11b, 802.11g
+          och 802.11n standard.</p>
 				<h2>Hur kan jag koppla upp mig mot det trådlösa nätverket?</h2>
-				<p>De flesta enheter har en auto-sök funktion som bör hitta det trådlösa nätverket inom några minuter efter du startat den. Om så inte sker kan Du söka efter   nätverket Region Skane publikt. </p>
+				<p>De flesta enheter har en auto-sök funktion som bör hitta det trådlösa
+          nätverket inom några minuter efter du startat den. Om så inte sker kan
+          Du söka efter   nätverket Region Skane publikt. </p>
 
-				<p>Öppna sedan en Internetläsare (t.ex. Internet explorer eller Firefox) och gå till valfri sida. Du kommer då se en välkomstsida.</p>
+				<p>Öppna sedan en Internetläsare (t.ex. Internet explorer eller Firefox)
+          och gå till valfri sida. Du kommer då se en välkomstsida.</p>
 				<h2>Hur säker är Internetuppkopplingen?</h2>
-				<p>Eftersom detta är ett publikt nätverk så används inte någon kryptering. Du bör därför se till att använda samma försiktighetsåtgärder som rekommenderas av   din bredbandsleverantör. För bästa skydd, använd gärna anti-virusprogram och brandvägg på din Enhet.</p>
+				<p>Eftersom detta är ett publikt nätverk så används inte någon kryptering.
+          Du bör därför se till att använda samma försiktighetsåtgärder som
+          rekommenderas av   din bredbandsleverantör. För bästa skydd, använd gärna
+          anti-virusprogram och brandvägg på din Enhet.</p>
 				<h2>Cookies</h2>
-				<p>Region Skånes Publika Gästnät använder sig av cookies för att ge åtkomst till Internet. För att komma ut på Internet måste du därför
+				<p>Region Skånes Publika Gästnät använder sig av cookies för att ge åtkomst
+          till Internet. För att komma ut på Internet måste du därför
 				tillåta cookies i din webläsare. För mer information se
-				<a href="http://www.skane.se/supportsidor/om-cookies/">Region Skånes information om cookies</a>.<p>
+				<a href="http://www.skane.se/supportsidor/om-cookies/">Region Skånes
+          information om cookies</a>.<p>
 				<h2>Kan jag använda VPN genom denna Internetuppkoppling</h2>
-				<p>Även om vi har testat flertalet VPN-produkter så kan vi inte garantera att alla VPN-klienter kan användas genom denna Internetanslutning. Eftersom denna     anslutning är skyddad av en brandvägg så måste din VPN-klient klara av NAT/PAT för att kunna koppla upp sig mot din VPN-server. Om du har problem eller är osäker på hur  din VPN-klient fungerar, var vänlig kontakta ditt företags IT-avdelning för information och hjälp.</p>
-				<h2>Jag kan inte skicka e-post från denna Internetanslutning. Finns det några inställningar jag kan ändra?</h2>
-				<p>Eftersom denna Internetanslutning tillhandahålls av region Skåne så kan det hända att vissa Internetsidor som innehåller material som har bedömts olämpligt  är spärrade. Om du försöker nå en av dessa sidor så kommer du att bli vidareskickad till en sida som meddelar att denna sida inte är tillgänglig genom det gästnätet. Om  du tror att den sidan du försökte nå är felaktigt spärrad så kan du skicka in URL:en och en kommentar genom länken "Synpunkter" på förstasidan.</p>
+				<p>Även om vi har testat flertalet VPN-produkter så kan vi inte garantera
+          att alla VPN-klienter kan användas genom denna Internetanslutning.
+          Eftersom denna     anslutning är skyddad av en brandvägg så måste din
+          VPN-klient klara av NAT/PAT för att kunna koppla upp sig mot din VPN-server.
+          Om du har problem eller är osäker på hur  din VPN-klient fungerar, var
+          vänlig kontakta ditt företags IT-avdelning för information och hjälp.</p>
+				<h2>Jag kan inte skicka e-post från denna Internetanslutning. Finns det
+          några inställningar jag kan ändra?</h2>
+				<p>Eftersom denna Internetanslutning tillhandahålls av region Skåne så kan
+          det hända att vissa Internetsidor som innehåller material som har bedömts
+          olämpligt  är spärrade. Om du försöker nå en av dessa sidor så kommer du
+          att bli vidareskickad till en sida som meddelar att denna sida inte är
+          tillgänglig genom det gästnätet. Om  du tror att den sidan du försökte
+          nå är felaktigt spärrad så kan du skicka in URL:en och en kommentar genom
+          länken "Synpunkter" på förstasidan.</p>
 				<h2>Jag behöver mer hjälp. Kan jag kontakta någon på plats eller på telefon?</h2>
 				<p>Vi erbjuder våra användare support via betalnummer på telefon!</p>
 				<p>Supportnummer: 0900-205 25 50<br />
