@@ -5,13 +5,30 @@
 
 var debug = true;
 
+var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+    }
+};
+
 // This function ensures the user gets redirect to the correct destination once
 // all jobs have succeeded in the portal software.
 function do_success() {
     console.log('success: '+window.location);
 
+    var url = getUrlParameter('url');
+
     // Do something like refresh the window or go to another URL.
-    window.location = window.href;
+    window.location = url;
     location.reload(true);
 }
 
