@@ -1,4 +1,7 @@
 # Add an iptables rule
+# This actually runs a command, so you can either define an iptables
+# command or a script. See the plugins.cfg for the options that are
+# replaced into the command line.
 
 import re
 import socket
@@ -13,9 +16,11 @@ except ImportError:
 from portal import logHandler, logFormatter
 
 # Try to import arping for mac_from_ip()
+use_arping = True
 try:
     from sh import arping
 except ImportError:
+    use_arping = False
     pass
 
 # By default run iptables through sudo, so the worker process must run with
@@ -38,6 +43,7 @@ def run(arg):
         l.setLevel(DEBUG)
         l.debug('debug logging enabled')
 
+    # Get client IP from webapp
     client_ip = environ.get(
         'HTTP_X_FORWARDED_FOR',
         environ.get('REMOTE_ADDR')
@@ -46,7 +52,7 @@ def run(arg):
     error_msg = None
     iptables_failed = False
 
-    # Verify IP
+    # Verify client IP
     try:
         socket.inet_aton(client_ip)
     except socket.error:
@@ -56,19 +62,20 @@ def run(arg):
             'failed': True
         }
 
-    # Attempt to get client HW address first.
-    try:
-        client_mac = mac_from_ip(
-            l,
-            config.get('iptables', 'arping'),
-            client_ip
-        )
-    except Exception as e:
-        l.warn('Failed to get client HW address: {error}'.format(
-            error=str(e)
-        ))
-        error_msg = str(e)
-        pass
+    # Attempt to get client HW address with arping
+    if use_arping:
+        try:
+            client_mac = mac_from_ip(
+                l,
+                config.get('iptables', 'arping'),
+                client_ip
+            )
+        except Exception as e:
+            l.warn('Failed to get client HW address: {error}'.format(
+                error=str(e)
+            ))
+            error_msg = str(e)
+            pass
 
     # If HW address was found, use it now.
     if client_mac and config.getboolean('iptables', 'use_mac'):
@@ -85,14 +92,10 @@ def run(arg):
         output = BytesIO()
         error = BytesIO()
         try:
-            rc = sudo.iptables(iptables_mac, _out=output, _err=error)
+            rc = sudo(iptables_mac, _out=output, _err=error)
 
             if rc.exit_code == 0:
                 l.debug('Created iptables MAC rule successfully')
-                return {
-                    'error': error_msg,
-                    'failed': False
-                }
         except ErrorReturnCode:
             error.seek(0)
             error_msg = error.read()
@@ -125,14 +128,10 @@ def run(arg):
         output = BytesIO()
         error = BytesIO()
         try:
-            rc = sudo.iptables(iptables_ip, _out=output, _err=error)
+            rc = sudo(iptables_ip, _out=output, _err=error)
 
             if rc.exit_code == 0:
                 l.debug('Created iptables IP rule successfully')
-                return {
-                    'error': error_msg,
-                    'failed': False
-                }
         except ErrorReturnCode:
             error.seek(0)
             error_msg = error.read()
