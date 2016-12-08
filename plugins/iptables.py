@@ -88,9 +88,6 @@ def run(arg):
         try:
             # The two arguments must not contain spaces of course.
             rc = sudo(tuple(iptables_cmd.split(' ')), _out=output, _err=error)
-
-            if rc.exit_code == 0:
-                l.debug('Created iptables IP rule successfully')
         except ErrorReturnCode:
             error.seek(0)
             error_msg = error.read()
@@ -108,6 +105,9 @@ def run(arg):
             error_msg = str(e)
             iptables_failed = True
             pass
+
+        if rc.exit_code == 0:
+            l.debug('Created iptables IP rule successfully')
 
     # If all else fails, error! This will be shown to end users.
     return {
