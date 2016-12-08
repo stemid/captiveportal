@@ -71,7 +71,7 @@ def run(arg):
         pass
 
     # If HW address was found, use it now.
-    if client_mac:
+    if client_mac and config.getboolean('iptables', 'use_mac'):
         l.debug('Found client HW address: {hw}'.format(
             hw=client_mac
         ))
