@@ -28,7 +28,7 @@ function do_success() {
     console.log('success: '+url);
 
     // Do something like refresh the window or go to another URL.
-    location.replace(url);
+    window.location = url;
 }
 
 // Show an error to the user
@@ -127,7 +127,8 @@ function poll_jobs(data) {
         }
 
         if (success) {
-            do_success();
+            // Will hopefully try a redirect until it succeeds.
+            var timer = setInterval(do_success, 2000);
         }
     }, function(reason) {
         do_error(reason);
@@ -152,7 +153,7 @@ $('#approveForm').submit(function (event) {
         $('#approveButton').val('');
         $('#approveButton').addClass('button-loading');
 
-        $('#approveButtonDiv').replaceWith('<img src="/static/images/radio.svg" alt="Loading, please wait..." />');
+        //$('#approveButtonDiv').replaceWith('<img src="/static/images/radio.svg" alt="Loading, please wait..." />');
 
         var ajaxReq = $.post(api_url);
         ajaxReq.done(poll_jobs);
