@@ -25,6 +25,11 @@ var getUrlParameter = function getUrlParameter(sParam) {
 function do_success() {
     var url = getUrlParameter('url');
 
+    // If url does not start with http the window.location redirect
+    // won't work. So prefix http to url.
+    if (!url.startsWith('http')) {
+        url = 'http://'+url;
+    }
     console.log('success: '+url);
 
     // Do something like refresh the window or go to another URL.
