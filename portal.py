@@ -209,7 +209,15 @@ def job_status(job_id):
 @app.route('/approve', method='POST')
 def approve_client():
     response.content_type = 'application/json'
-    jobs = dispatch_plugins()
+    try:
+        jobs = dispatch_plugins()
+    except Exception as e:
+        response.status = 500
+        jobs = {
+            'result': {
+                'error': str(e)
+            }
+        }
 
     return json.dumps(jobs)
 

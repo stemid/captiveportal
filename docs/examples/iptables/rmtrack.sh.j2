@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Conntracking keeps track of active connections so even if a user
+# authenticates with a captive portal and new firewall rules are
+# created it will take a while before the client takes these new
+# routes. So conntrack -D can expedite that process.
+
+test -n "$1" || exit 1
+client_ip=$1
+
+conntrack_cmd=/sbin/conntrack
+
+# Deletes all conntracking entries for connections originating from
+# to webportal server IP so that hopefully new connections can be
+# initiated directly to destination.
+$conntrack_cmd -D --orig-src $client_ip --orig-dst {{captiveportal_conf.webportal_ip}}

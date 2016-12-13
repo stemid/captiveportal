@@ -23,18 +23,25 @@ var getUrlParameter = function getUrlParameter(sParam) {
 // This function ensures the user gets redirect to the correct destination once
 // all jobs have succeeded in the portal software.
 function do_success() {
-    console.log('success: '+window.location);
+    var url = getUrlParameter('url');
+
+    // If url does not start with http the window.location redirect
+    // won't work. So prefix http to url.
+    if (!url.startsWith('http')) {
+        url = 'http://'+url;
+    }
+    console.log('success: '+url);
 
     var url = getUrlParameter('url');
 
     // Do something like refresh the window or go to another URL.
     window.location = url;
-    location.reload(true);
 }
 
 // Show an error to the user
 function do_error(message) {
     console.log('failure: '+message);
+    $('#approveButton').prop('disabled', false);
 
     $('#error-box').show();
     $('#form-row').hide();
@@ -127,7 +134,8 @@ function poll_jobs(data) {
         }
 
         if (success) {
-            do_success();
+            // Will hopefully try a redirect until it succeeds.
+            var timer = setInterval(do_success, 2000);
         }
     }, function(reason) {
         do_error(reason);
@@ -149,10 +157,10 @@ $('#approveForm').submit(function (event) {
     // just replacing it.
     if ($('#approveCheckbox').is(':checked')) {
         $('#approveButton').prop('disabled', true);
-        $('#approveButton').val('');
+        //$('#approveButton').val('');
         $('#approveButton').addClass('button-loading');
 
-        $('#approveButtonDiv').replaceWith('<img src="/static/images/radio.svg" alt="Loading, please wait..." />');
+        //$('#approveButtonDiv').replaceWith('<img src="/static/images/radio.svg" alt="Loading, please wait..." />');
 
         var ajaxReq = $.post(api_url);
         ajaxReq.done(poll_jobs);

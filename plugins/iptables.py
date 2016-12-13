@@ -1,4 +1,7 @@
 # Add an iptables rule
+# This actually runs a command, so you can either define an iptables
+# command or a script. See the plugins.cfg for the options that are
+# replaced into the command line.
 
 import re
 import socket
@@ -13,9 +16,11 @@ except ImportError:
 from portal import logHandler, logFormatter
 
 # Try to import arping for mac_from_ip()
+use_arping = True
 try:
     from sh import arping
 except ImportError:
+    use_arping = False
     pass
 
 # By default run iptables through sudo, so the worker process must run with
@@ -38,6 +43,7 @@ def run(arg):
         l.setLevel(DEBUG)
         l.debug('debug logging enabled')
 
+    # Get client IP from webapp
     client_ip = environ.get(
         'HTTP_X_FORWARDED_FOR',
         environ.get('REMOTE_ADDR')
@@ -46,7 +52,7 @@ def run(arg):
     error_msg = None
     iptables_failed = False
 
-    # Verify IP
+    # Verify client IP
     try:
         socket.inet_aton(client_ip)
     except socket.error:
@@ -56,100 +62,52 @@ def run(arg):
             'failed': True
         }
 
-    # Attempt to get client HW address first.
-    try:
-        client_mac = mac_from_ip(
-            l,
-            config.get('iptables', 'arping'),
-            client_ip
-        )
-    except Exception as e:
-        l.warn('Failed to get client HW address: {error}'.format(
-            error=str(e)
-        ))
-        error_msg = str(e)
-        pass
+    # Attempt to get client HW address with arping
+    if use_arping:
+        try:
+            client_mac = mac_from_ip(
+                l,
+                config.get('iptables', 'arping'),
+                client_ip
+            )
+        except Exception as e:
+            l.warn('Failed to get client HW address: {error}'.format(
+                error=str(e)
+            ))
+            error_msg = str(e)
+            pass
 
-    # If HW address was found, use it now.
-    if client_mac:
-        l.debug('Found client HW address: {hw}'.format(
-            hw=client_mac
-        ))
-
-        # Create tuple out of iptables command
-        iptables_mac = config.get('iptables', 'iptables_mac').format(
+    if client_ip:
+        iptables_cmd = config.get('iptables', 'iptables_cmd').format(
+            ip_address=client_ip,
             mac_address=client_mac
         )
-        iptables_mac = tuple(iptables_mac.split(' '))
 
         output = BytesIO()
         error = BytesIO()
         try:
-            rc = sudo.iptables(iptables_mac, _out=output, _err=error)
-
-            if rc.exit_code == 0:
-                l.debug('Created iptables MAC rule successfully')
-                return {
-                    'error': error_msg,
-                    'failed': False
-                }
+            # The two arguments must not contain spaces of course.
+            rc = sudo(tuple(iptables_cmd.split(' ')), _out=output, _err=error)
         except ErrorReturnCode:
             error.seek(0)
             error_msg = error.read()
             l.warn('{cmd}: exited badly: {error}'.format(
-                cmd=('iptables', iptables_mac),
+                cmd=('iptables', iptables_cmd),
                 error=error_msg
             ))
             iptables_failed = True
             pass
         except Exception as e:
             l.warn('{cmd}: failed: {error}'.format(
-                cmd=('iptables', iptables_mac),
+                cmd=('iptables', iptables_cmd),
                 error=str(e)
             ))
             error_msg = str(e)
             iptables_failed = True
             pass
 
-    # Fallback on IP if HW address fails
-    if client_ip:
-        l.debug('Using client IP: {ip}'.format(
-            ip=client_ip
-        ))
-
-        iptables_ip = config.get('iptables', 'iptables_ip').format(
-            ip_address=client_ip
-        )
-        iptables_ip = tuple(iptables_ip.split(' '))
-
-        output = BytesIO()
-        error = BytesIO()
-        try:
-            rc = sudo.iptables(iptables_ip, _out=output, _err=error)
-
-            if rc.exit_code == 0:
-                l.debug('Created iptables IP rule successfully')
-                return {
-                    'error': error_msg,
-                    'failed': False
-                }
-        except ErrorReturnCode:
-            error.seek(0)
-            error_msg = error.read()
-            l.warn('{cmd}: exited badly: {error}'.format(
-                cmd=('iptables', iptables_ip),
-                error=error_msg
-            ))
-            iptables_failed = True
-            pass
-        except Exception as e:
-            l.warn('{cmd}: failed: {error}'.format(
-                cmd=('iptables', iptables_ip),
-                error=str(e)
-            ))
-            error_msg = str(e)
-            iptables_failed = True
-            pass
+        if rc.exit_code == 0:
+            l.debug('Created iptables IP rule successfully')
 
     # If all else fails, error! This will be shown to end users.
     return {
@@ -183,3 +141,4 @@ def mac_from_ip(l, arping_args, ip):
         if line.startswith(line_start):
             m = re.search('(([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2}))', line)
             if m: return m.group(0)
+
