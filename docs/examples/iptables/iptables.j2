@@ -1,0 +1,98 @@
+# {{ ansible_managed }}
+#
+# These rules are for the Captive Portal project.
+# by Stefan Midjich - 2016/03
+
+# Routing of traffic requires: sysctl net.ipv4.ip_forward = 1
+#
+# {{captiveportal_conf.input_nic}} is LAN and used as default route on LAN clients.
+# {{captiveportal_conf.output_nic}} is WAN.
+# {{captiveportal_conf.webportal_ip}} is the same as IP on {{captiveportal_conf.input_nic}}
+
+# Mangle table allows the marking of traffic. If you use -j RETURN before 
+# -j MARK you jump out of the internet chain and your traffic is not marked.
+*mangle
+:PREROUTING ACCEPT
+:INPUT ACCEPT
+:OUTPUT ACCEPT
+:POSTROUTING ACCEPT
+
+# Create custom chain in mangle table called "internet"
+:internet - [0:0]
+
+# Run all traffic from {{captiveportal_conf.input_nic}} through the internet chain
+-A PREROUTING -i {{captiveportal_conf.input_nic}} -j internet
+
+# Example to allow authorized clients in by MAC address
+#-A internet -m mac --mac-source "xx:xx:xx:xx:56:eb" -j RETURN
+# Live example: -I internet 1 -m mac --mac-source "xx:xx:xx:xx:56:eb" -j RETURN
+# inserts at the top of the rules before the mark rule.
+#
+# iptables -t mangle -I internet -m tcp -p tcp --source 1.2.3.4 -j RETURN
+# iptables -t mangle -I internet -m udp -p udp --source 1.2.3.4 -j RETURN
+
+# For MGMT SSH traffic return out of internet chain so it's not marked
+-A internet -p tcp -d {{captiveportal_conf.webportal_ip}} --dport ssh -j RETURN
+
+# Bypass NTP also
+#-A internet -p udp --dport ntp -j RETURN
+
+# Mark all other traffic in the internet chain with 99. Any traffic after
+# this rule is marked and blocked.
+-A internet -j MARK --set-mark 99
+
+COMMIT
+
+# NAT rules that redirect traffic and allow the portal server to act as gateway.
+*nat
+:PREROUTING ACCEPT
+:INPUT ACCEPT
+:OUTPUT ACCEPT
+:POSTROUTING ACCEPT
+
+# Redirect all marked HTTP traffic to the webportal IP
+-A PREROUTING -m mark --mark 99 -p tcp --dport http -j DNAT --to-destination {{captiveportal_conf.webportal_ip}}
+-A PREROUTING -m mark --mark 99 -p tcp --dport https -j DNAT --to-destination {{captiveportal_conf.webportal_ip}}
+
+# Redirect all marked DNS traffic to the webportal IP
+-A PREROUTING -m mark --mark 99 -p udp --dport domain -j DNAT --to-destination {{captiveportal_conf.webportal_ip}}
+-A PREROUTING -m mark --mark 99 -p tcp --dport domain -j DNAT --to-destination {{captiveportal_conf.webportal_ip}}
+
+# Redirect all ICMP to the webportal IP
+-A PREROUTING -m mark --mark 99 -p icmp -j DNAT --to-destination {{captiveportal_conf.webportal_ip}}
+
+# Redirect all unmarked DNS traffic to upstream DNS servers
+{% for server in captiveportal_conf.upstream_dns %}
+-A PREROUTING -p udp --dport domain -j DNAT --to-destination {{server}}
+-A PREROUTING -p tcp --dport domain -j DNAT --to-destination {{server}}
+{% endfor %}
+
+# Route any traffic out through the output NIC to act as gateway
+-A POSTROUTING -o {{captiveportal_conf.output_nic}} -j MASQUERADE
+
+COMMIT
+
+# Filter rules that determine access to the portal server.
+*filter
+:INPUT ACCEPT
+:FORWARD ACCEPT
+:OUTPUT ACCEPT
+
+# Enable stateful connections
+-I OUTPUT -o {{captiveportal_conf.output_nic}} -d 0.0.0.0/0 -j ACCEPT
+-I INPUT -i {{captiveportal_conf.input_nic}} -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# Accept HTTP traffic both to the server and forwarded
+-A INPUT -p tcp --dport http -j ACCEPT
+-A FORWARD -p tcp --dport http -j ACCEPT
+
+# Accept DNS traffic to self
+-A INPUT -p udp --dport domain -j ACCEPT
+-A INPUT -p tcp --dport domain -j ACCEPT
+
+# Drop all other traffic marked 99
+-A FORWARD -m mark --mark 99 -j DROP
+-A INPUT -m mark --mark 99 -j DROP
+
+COMMIT
+

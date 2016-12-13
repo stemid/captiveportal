@@ -11,6 +11,10 @@ This is a commonly seen setup in public Wifi networks or hotspots.
 
 This app was specifically written for such a hotspot and as such requires a lot of other configuration around it. This is an ongoing [documentation project here](https://wiki.sydit.se/teknik:guider:networking:captive_portal_med_iptables).
 
+## More documentation
+
+I've moved all examples from the [aforementioned wiki-page](https://wiki.sydit.se/teknik:guider:networking:captive_portal_med_iptables) to the docs/examples directory.
+
 # Plugins
 
 Plugins are executed when the user clicks through the captive portal form, whether they submit data or just approve an EULA these plugins are executed. 
