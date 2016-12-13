@@ -155,7 +155,7 @@ $('#approveForm').submit(function (event) {
     // just replacing it.
     if ($('#approveCheckbox').is(':checked')) {
         $('#approveButton').prop('disabled', true);
-        $('#approveButton').val('');
+        //$('#approveButton').val('');
         $('#approveButton').addClass('button-loading');
 
         //$('#approveButtonDiv').replaceWith('<img src="/static/images/radio.svg" alt="Loading, please wait..." />');
