@@ -23,7 +23,7 @@ var getUrlParameter = function getUrlParameter(sParam) {
 // This function ensures the user gets redirect to the correct destination once
 // all jobs have succeeded in the portal software.
 function do_success() {
-    var url = getUrlParameters('url');
+    var url = getUrlParameter('url');
 
     console.log('success: '+url);
 
