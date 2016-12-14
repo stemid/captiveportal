@@ -4,15 +4,14 @@ import json
 from pprint import pprint as pp
 from uuid import UUID
 from importlib import import_module
+from logging import Formatter, getLogger, DEBUG, INFO, WARN
+from logging.handlers import SysLogHandler, RotatingFileHandler
 
 # Until pyvenv-3.4 is fixed on centos 7 support python 2.
 try:
     from configparser import RawConfigParser
 except ImportError:
     from ConfigParser import RawConfigParser
-
-from logging import Formatter, getLogger, DEBUG, INFO, WARN
-from logging.handlers import SysLogHandler, RotatingFileHandler
 
 from redis import Redis
 from rq import Queue
