@@ -18,3 +18,7 @@
 	color: #D8000C;
 	background-color: #FFBABA;
 }
+
+#error-box {
+	display:none;
+}

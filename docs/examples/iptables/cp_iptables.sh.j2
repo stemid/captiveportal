@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# Captiveportal iptables wrapper script
+#iptables_mac = iptables -t mangle -I internet 1 -m mac --mac-source {mac_address} -j RETURN
+
+# First argument must be IP-address of client
+test -n "$1" || exit 1
+
+client_ip="$1"
+ipt=/sbin/iptables
+
+# Enable client traffic in internet chain by jumping over the mark
+$ipt -t mangle -I internet 1 -p tcp --source "$client_ip" -j RETURN &>/dev/null && \
+    $ipt -t mangle -I internet 1 -p udp --source "$client_ip" -j RETURN &>/dev/null
+iptables_rc=$?
+
+# Delete conntrack info for client IP
+/usr/local/sbin/rmtrack.sh "$client_ip" &>/dev/null
+rmtrack_rc=$?
+
+if [[ $iptables_rc == 0 && $rmtrack_rc == 0 ]]; then
+    # Success
+    exit 0
+else
+    echo "Error: iptables[$iptables_rc], rmtrack[$rmtrack_rc]" 1&>2
+    exit 1
+fi

@@ -1,7 +1,7 @@
 # Captiveportal web application using Bottle.py
 
 import json
-from pprint import pprint
+from pprint import pprint as pp
 from uuid import UUID
 from importlib import import_module
 
@@ -128,12 +128,17 @@ def dispatch_plugins():
             ))
             continue
 
+        # Let plugin run for 30 more seconds than the defined plugin_timeout
+        # because that value is also used by the JS code to poll the job
+        # status so we don't want rq to kill the job before JS has timed out.
+        plugin_timeout = config.getint('portal', 'plugin_timeout')+30
+
         # Run plugin.run()
         try:
             plugin_job = Q.enqueue(
                 plugin_module.run,
                 arg,
-                ttl=config.getint('portal', 'plugin_ttl')
+                timeout=plugin_timeout
             )
         except Exception as e:
             l.warn('{plugin}: {error}'.format(
@@ -166,7 +171,7 @@ app.router.add_filter('uuid', uuid_filter)
 def portalindex():
     return template(
         config.get('portal', 'index_page'),
-        plugin_ttl=config.get('portal', 'plugin_ttl')
+        plugin_timeout=config.getint('portal', 'plugin_timeout')
     )
 
 
@@ -203,13 +208,22 @@ def job_status(job_id):
         'meta': job.meta
     }
 
+
     return json.dumps(job_data)
 
 
 @app.route('/approve', method='POST')
 def approve_client():
     response.content_type = 'application/json'
-    jobs = dispatch_plugins()
+    try:
+        jobs = dispatch_plugins()
+    except Exception as e:
+        response.status = 500
+        jobs = {
+            'result': {
+                'error': str(e)
+            }
+        }
 
     return json.dumps(jobs)
 

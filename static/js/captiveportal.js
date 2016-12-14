@@ -1,31 +1,61 @@
 // Captive portal Javascript
-// by Stefan Midjich
-//
+// by Stefan Midjich @ Cygate AB
 //
 
 var debug = true;
 
+function getUrlParameter(sParam, default_value) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+    }
+
+    return default_value;
+}
+
+
 // This function ensures the user gets redirect to the correct destination once
 // all jobs have succeeded in the portal software.
 function do_success() {
-    console.log('success: '+window.location);
+    var url = getUrlParameter('url', 'www.google.com');
 
-    // Do something like refresh the window or go to another URL.
-    window.location = window.href;
-    location.reload(true);
+    // If url does not start with http the window.location redirect
+    // won't work. So prefix http to url.
+    if (!url.startsWith('http')) {
+        url = 'http://'+url;
+    }
+    console.log('success: '+url);
+    $('#error-box').html('<p>If you\'re not automatically redirected open your browser and try any website manually.</p>');
+    $('#error-box').show();
+    $('#statusDiv').html('');
+    $('#approveButton').prop('disabled', false);
+
+    // Redirect user to the url paramter.
+    window.location = url;
 }
+
 
 // Show an error to the user
 function do_error(message) {
-    console.log('failure: '+message);
+    $('#approveButton').prop('disabled', false);
+    $('#statusDiv').html('');
 
     $('#error-box').show();
-    $('#form-row').hide();
-    $('#error-box').append('<p>Failed. Reload page and try again or contact support.</p> ');
+    $('#error-box').html('<p>Failed. Reload page and try again or contact support.</p> ');
     if (message) {
+        console.log('server: '+message);
         $('#error-box').append('<p>System response: '+message+'</p>');
     }
 }
+
 
 // Poll the returned jobs and ensure they all succeed
 function poll_jobs(data) {
@@ -45,7 +75,7 @@ function poll_jobs(data) {
         }
 
         promises.push(new Promise(function(resolve, reject) {
-            var maxRun = plugin_ttl/2;
+            var maxRun = plugin_timeout/2;
             var timesRun = 0;
 
             // Timer function that polls the API for job results
@@ -61,14 +91,14 @@ function poll_jobs(data) {
 
                     console.log(job_result);
                     if(job_result.is_finished) {
-                        console.log('Resolving job: ', job_result.id);
+                        console.log('Resolving job: ', job_result);
                         resolve(job_result);
                         clearTimeout(timer);
                         return(true);
                     }
 
                     if(job_result.is_failed) {
-                        console.log('Job failed: ', job_result.id);
+                        console.log('Job failed: ', job_result);
                         reject(job_result);
                         clearTimeout(timer);
                         return(false);
@@ -95,47 +125,46 @@ function poll_jobs(data) {
     }
 
     // Run .all() on promises array until all promises resolve
+    // This is resolve() above.
     Promise.all(promises).then(function(result) {
         var success = true;
 
         for(var i=0;i<result.length;i++) {
-            console.log('Job result: ', result[i]);
             var r = result[i].result;
-            var m = result[i].meta;
-            if (r.failed && m.mandatory) {
-                do_error(r.error);
-                success = false;
-                break;
+            var meta = result[i].meta;
+            if (meta.mandatory) {
+                if (result[i].is_finished && result[i].is_failed) {
+                    do_error(r.error);
+                    success = false;
+                    break;
+                }
             }
         }
 
         if (success) {
-            do_success();
+            // This is for Steve...
+            // Apple devices don't poll their captiveportal URL,
+            // so this is for them. Android devices will do their
+            // own polling and close the wifi-portal before this.
+            setTimeout(do_success, 30000);
         }
+
+    // This is reject() above.
     }, function(reason) {
         do_error(reason);
     });
 }
 
 
-$(document).ready(function() {
-    $('#error-box').hide();
-});
-
-
 // Submit the form
 $('#approveForm').submit(function (event) {
     var api_url = '/approve';
     event.preventDefault();
+    $('#error-box').hide();
+    $('#approveButton').prop('disabled', true);
+    $('#statusDiv').html('<img src="/static/images/radio.svg" alt="Loading, please wait..." />');
 
-    // Had some issues trying to set a background image on the button, so I'm
-    // just replacing it.
     if ($('#approveCheckbox').is(':checked')) {
-        $('#approveButton').prop('disabled', true);
-        $('#approveButton').val('');
-        $('#approveButton').addClass('button-loading');
-
-        $('#approveButtonDiv').replaceWith('<img src="/static/images/radio.svg" alt="Loading, please wait..." />');
 
         var ajaxReq = $.post(api_url);
         ajaxReq.done(poll_jobs);

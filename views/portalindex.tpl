@@ -9,8 +9,6 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
-
   <link rel="stylesheet" href="/static/css/normalize.css">
   <link rel="stylesheet" href="/static/css/skeleton.css">
   <link rel="stylesheet" href="/static/css/captiveportal.css">
@@ -56,6 +54,8 @@
       <div class="row">
         <div id="error-box" class="five columns msgbox msgbox-error">
         </div>
+				<div id="statusDiv">
+				</div>
       </div>
 
       <div id="form-row" class="row">
@@ -66,7 +66,8 @@
         </div>
         <div id="approveButtonDiv" class="one column u-pull-left">
           <label>
-            <input id="approveButton" class="button-primary" value="Approve" type="submit">
+						<button class="button-primary" id="approveButton" type="submit">Approve</button>
+            <!--<input id="approveButton" class="button-primary" value="Approve" type="submit">-->
           </label>
         </div>
       </div>
@@ -75,9 +76,9 @@
   </div>
 
   <script>
-    var plugin_ttl = {{plugin_ttl}};
+    var plugin_timeout = {{plugin_timeout}};
   </script>
-  <script src="https://code.jquery.com/jquery-1.12.2.min.js"></script>
+  <script src="/static/js/jquery-1.12.2.min.js"></script>
   <script src="/static/js/captiveportal.js"></script>
 
 </body>
