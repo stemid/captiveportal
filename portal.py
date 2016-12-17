@@ -15,7 +15,7 @@ except ImportError:
 
 from redis import Redis
 from rq import Queue
-from bottle import Bottle, default_app
+from bottle import Bottle, default_app, debug
 from bottle import request, response, template, static_file
 
 config = RawConfigParser()
@@ -232,6 +232,6 @@ if __name__ == '__main__':
         host=config.get('portal', 'listen_host'),
         port=config.getint('portal', 'listen_port')
     )
-    debug(config.getbool('portal', 'debug'))
+    debug(config.getboolean('portal', 'debug'))
 else:
     application = app
