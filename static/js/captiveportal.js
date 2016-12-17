@@ -174,4 +174,5 @@ $('#approveForm').submit(function (event) {
             do_error(XMLHttpRequest.responseText);
         });
     }
+
 });
