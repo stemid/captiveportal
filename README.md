@@ -45,3 +45,35 @@ Also with plugins there are options to connect other authentication methods like
 # Deployment
 
 See examples in docs/examples directory.
+
+# Technical details
+
+## IPtables
+
+At the heart is iptables doing the following. 
+
+1. Labeling all traffic with the number 99 in the mangle table.
+2. Labeled ICMP, DNS and HTTP traffic is redirected to the portal server in the nat table.
+3. All other labeled traffic is dropped.
+4. Authenticated clients are jumped out of the mangle table before being labeled, using the RETURN target.
+5. Authenticated clients are also deleted from conntrack after having their exception rules created in the mangle table.
+
+## Portal
+
+All this is of course triggered by the portal application written in Python using Bottle.
+
+1. A clients redirected HTTP traffic puts them in the portal webpage.
+2. They send a POST form to the /approve url. This can be with user info, personal info, or simply an approve button for a EULA. 
+3. The portal executes its plugins in the order that their config section appears in plugins.cfg.
+4. Each plugin is passed the request object from Bottle which contains form values among other things.
+
+## Plugins
+
+There's only one relevant plugin right now, iptables. But the idea is that you could add RADIUS plugins or other services. The mandatory flag in plugins.cfg decides if a plugin must pass before a client is authenticated. So you can string several plugins together for several actions that must be performed. 
+
+Each plugin responds with JSON.
+
+### iptables plugin
+
+1. Executes the ``iptables_cmd`` defined in plugins.cfg, with arguments being the client IP and potentially the client MAC address.
+2. Ensures the exit code of ``iptables_cmd`` is 0, if not 0 it sets a failed flag in its JSON response.
