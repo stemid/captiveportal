@@ -57,10 +57,14 @@
 
                 <ul id="mobile-nav-list">
                     <li><a title="Hem" href="/">Hem</a></li>
+                    <li><a href="/#/FAQ-Swedish">Vanliga Frågor</a></li>
+                    <li><a href="/#/English">English</a></li>
                 </ul>
 
                 <ul id="main-nav-list">
                     <li><a href="/">Hem</a></li>
+                    <li><a href="/#/FAQ-Swedish">Vanliga Frågor</a></li>
+                    <li><a href="/#/English">English</a></li>
                 </ul>
             </nav>
         </div>
@@ -96,10 +100,6 @@
       <div class="article-img-container">
       </div>
       <nav class="header-nav">
-          <ul class="help-menu">
-							<li><a title="Vanliga frågor" href="/#/FAQ-Swedish">Vanliga frågor</a></li>
-              <li><a title="English" href="/#/English">English</a></li>
-          </ul>
       </nav>
       <h1 role="heading" class="title">Villkor för tjänsten</h1>
       <div class="body">
@@ -124,16 +124,16 @@
           följa regler ex. förbudskyltar som gäller användning av enheter i
           närheten Medicinteknisk utrustning, då denna kan störas.</p>
 
-        <form id="approveForm" method="post">
+        <form ng-submit="submit()" id="approveForm" method="post">
           <div class="static-form-block">
             <div id="error-box" class="msg-container success-msg hide">
             </div>
 
             <div class="input-container">
               <label>
-                <input type="checkbox" id="approveCheckbox" required> Jag godkänner avtalet
+                <input ng-model="approved.answer" type="checkbox" id="approveCheckbox" required> Jag godkänner avtalet
               </label>
-              <button type="submit" class="button" id="approveButton" value="Godkänn"></button>
+              <button type="submit" class="button" id="approveButton" value="Godkänn">Godkänn</button>
             </div>
           </div>
         </form>
@@ -250,10 +250,14 @@
   </article>
 </script>
 
+<script>
+	// This is fetched server side through template value.
+	var plugin_timeout = {{plugin_timeout}}
+</script>
 
-<script src="/static/js/jquery-1.12.2.min.js"></script>
 <script src="/static/rs/js/angular.min.js"></script>
 <script src="/static/rs/js/rsapp.js"></script>
+<script src="/static/js/jquery-1.12.2.min.js"></script>
 <script src="/static/js/captiveportal.js"></script>
 
 </body>

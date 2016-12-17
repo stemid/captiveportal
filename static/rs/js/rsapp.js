@@ -14,7 +14,22 @@ app.config(function($routeProvider) {
         .otherwise({redirectTo: '/Swedish'});
 });
 
-app.controller('RSMainCtrl', function($scope) {
+app.controller('RSMainCtrl', function($scope, $http) {
+    $scope.approved = {};
+
+    $scope.submit = function() {
+        if ($scope.approved.answer == true) {
+            $http({
+                method: 'POST',
+                url: '/approve',
+            }).then(function success(response) {
+                poll_jobs(response.data);
+            }, function error(response) {
+                // Failure
+                console.log(response);
+            });
+        }
+    };
 
 });
 
