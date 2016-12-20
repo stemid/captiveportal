@@ -10,7 +10,7 @@
     <meta charset='utf-8' />
     <title>Gästportal - Region Skåne</title>
     <meta content='Gästportal' name='description' />
-    <meta content='' name='author' />
+    <meta content='Cygate AB' name='author' />
     <meta content='width=device-width, initial-scale=1.0' name='viewport' />
     <meta content="no-index,no-follow" name="robots">
     <link rel="icon" type="image/ico" href="/static/rs/images/favicon.ico">
@@ -56,13 +56,13 @@
                 </ul>
 
                 <ul id="mobile-nav-list">
-                    <li><a title="Hem" href="/">Hem</a></li>
+                    <li><a title="Hem" href="/#/">Hem</a></li>
                     <li><a href="/#/FAQ-Swedish">Vanliga Frågor</a></li>
                     <li><a href="/#/English">English</a></li>
                 </ul>
 
                 <ul id="main-nav-list">
-                    <li><a href="/">Hem</a></li>
+                    <li><a href="/#/">Hem</a></li>
                     <li><a href="/#/FAQ-Swedish">Vanliga Frågor</a></li>
                     <li><a href="/#/English">English</a></li>
                 </ul>
@@ -126,14 +126,18 @@
 
         <form ng-submit="submit()" id="approveForm" method="post">
           <div class="static-form-block">
-            <div id="error-box" class="msg-container success-msg hide">
+            <div id="error-box" class="msg-container ng-hide" ng-show="apiErrors.length > 0">
+							<p ng-repeat="error in apiErrors">[%error%]</p>
             </div>
 
             <div class="input-container">
               <label>
                 <input ng-model="approved.answer" type="checkbox" id="approveCheckbox" required> Jag godkänner avtalet
               </label>
-              <button type="submit" class="button" id="approveButton" value="Godkänn">Godkänn</button>
+              <button ng-disabled="apiProcessing" type="submit" class="button" id="approveButton">
+								Godkänn
+							</button>
+							<img ng-show="apiProcessing" height="35" width="35" src="/static/rs/images/loading.gif">
             </div>
           </div>
         </form>
@@ -169,7 +173,8 @@
 
         <form id="approveForm" method="post">
           <div class="static-form-block">
-            <div id="error-box" class="msg-container success-msg hide">
+            <div id="error-box" class="msg-container" ng-show="apiErrors.length > 0">
+							<p ng-repeat="error in apiErrors">[%error%]</p>
             </div>
 
             <div class="input-container">
@@ -257,8 +262,6 @@
 
 <script src="/static/rs/js/angular.min.js"></script>
 <script src="/static/rs/js/rsapp.js"></script>
-<script src="/static/js/jquery-1.12.2.min.js"></script>
-<script src="/static/js/captiveportal.js"></script>
 
 </body>
 </html>
