@@ -3,13 +3,14 @@
 //
 //
 
-var app = angular.module("rsPortalApp", []);
+var app = angular.module("rsPortalApp", ['ngRoute']);
 
 app.constant('config', {
     debug: true
 });
 
 app.config(function($routeProvider, $interpolateProvider) {
+
     $routeProvider
         .when('/Swedish', {templateUrl: "swedish.html" })
         .when('/English', {templateUrl: "english.html" })
@@ -20,20 +21,35 @@ app.config(function($routeProvider, $interpolateProvider) {
     $interpolateProvider.endSymbol('%]');
 });
 
-app.controller('RSMainCtrl', function($scope, $http, $q, config) {
+app.controller('RSMainCtrl', function($scope, $http, $q, $location, $timeout, config) {
+
     $scope.approved = {};
     $scope.apiProcessing = false;
-    $scope.apiErrors = [];
+    var params = $location.search();
 
-    function poll_jobs(job_id) {
+    if (params.url === undefined) {
+        $scope.redir_url = 'http://www.google.com';
+    } else {
+        if (params.url.startsWith('http')) {
+            $scope.redir_url = params.url;
+        } else {
+            $scope.redir_url = 'http://'+params.url;
+        }
+    }
+
+    function do_success() {
+        console.log($scope.redir_url);
+        angular.element(document.location = $scope.redir_url)
+    }
+
+    function poll_job(job_id) {
         var defer = $q.defer();
         var api_url = '/job/'+job_id;
 
-        // TODO: Restore maxRun before going live.
-        var maxRun = plugin_timeout/10;
+        var maxRun = plugin_timeout/2;
         var timesRun = 0;
 
-        var do_poll = function () {
+        setTimeout(function () {
             $http.get(api_url).success(function(data) {
                 if (config.debug) {
                     console.log(data);
@@ -55,49 +71,40 @@ app.controller('RSMainCtrl', function($scope, $http, $q, config) {
 
             console.log('Runs: '+timesRun+'/'+maxRun);
             if (++timesRun == maxRun) {
-                clearTimeout(timer);
                 if (config.debug) {
                     console.log('Polling timed out');
                 }
                 defer.reject("Job polling timed out");
-                return;
-            } else {
-                timer = setTimeout(do_poll, 2000);
             }
 
-        };
+        }, 1000);
 
-        var timer = setTimeout(do_poll, 500);
+        return defer.promise;
     }
 
     $scope.submit = function() {
         $scope.apiProcessing = true;
-        console.log('hej');
         var promises = [];
+        $scope.apiErrors = [];
 
         if ($scope.approved.answer == true) {
             $http({
                 method: 'POST',
                 url: '/approve',
             }).then(function success(response) {
-                if (config.debug) {
-                    console.log('/approve => '+response);
-                }
                 for (var job in response.data) {
                     var job_id = response.data[job].id;
-                    var promise = poll_jobs(job_id);
+                    var promise = poll_job(job_id);
                     promises.push(promise);
                 }
 
-                $q.all(promises).then(function (response) {
-                    if (config.debug) {
-                        console.log('Resolved: '+response);
-                    }
+                $q.all(promises).then(function (job_id, response) {
                     $scope.apiProcessing = false;
-                }, function (reason) {
-                    if (config.debug) {
-                        console.log(reason);
-                    }
+                    console.log('Success');
+                    // Do success redirect
+                    $timeout(do_success, 30000);
+                }, function (job_id, reason) {
+                    $scope.apiErrors.push('Job '+job_id+' failed: '+reason);
                     $scope.apiProcessing = false;
                 });
 

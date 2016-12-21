@@ -16,6 +16,7 @@
     <link rel="icon" type="image/ico" href="/static/rs/images/favicon.ico">
 
     <link href="/static/rs/css/style.css" media="screen, projection" rel="stylesheet" type="text/css" />
+    <link href="/static/rs/css/custom.css" media="screen, projection" rel="stylesheet" type="text/css" />
 
     <!--[if lt IE 9]>
         <link href="/static/rs/css/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
@@ -126,10 +127,6 @@
 
         <form ng-submit="submit()" id="approveForm" method="post">
           <div class="static-form-block">
-            <div id="error-box" class="msg-container ng-hide" ng-show="apiErrors.length > 0">
-							<p ng-repeat="error in apiErrors">[%error%]</p>
-            </div>
-
             <div class="input-container">
               <label>
                 <input ng-model="approved.answer" type="checkbox" id="approveCheckbox" required> Jag godkänner avtalet
@@ -139,6 +136,11 @@
 							</button>
 							<img ng-show="apiProcessing" height="35" width="35" src="/static/rs/images/loading.gif">
             </div>
+
+            <div id="error-box" class="msg-container ng-hide" ng-show="apiErrors.length > 0">
+							<p ng-repeat="error in apiErrors">[%error%]</p>
+            </div>
+
           </div>
         </form>
 
@@ -154,12 +156,8 @@
   <article role="article">
       <div class="article-img-container">
       </div>
-      <nav class="header-nav">
-          <ul class="help-menu">
-              <li><a title="Swedish" href="/#/Swedish">Swedish</a></li>
-          </ul>
-      </nav>
       <h1 role="heading" class="title">End user agreement</h1>
+
       <div class="body">
         <p>More here later. Lorem Ipsum is simply dummy text of the printing and
           typesetting industry. Lorem Ipsum has been the industry's standard
@@ -196,11 +194,6 @@
   <article role="article">
       <div class="article-img-container">
       </div>
-      <nav class="header-nav">
-          <ul class="help-menu">
-              <li><a title="English" href="/#/English">English</a></li>
-          </ul>
-      </nav>
       <h1 role="heading" class="title">Vanliga frågor</h1>
       <div class="body">
 
@@ -260,7 +253,8 @@
 	var plugin_timeout = {{plugin_timeout}}
 </script>
 
-<script src="/static/rs/js/angular.min.js"></script>
+<script src="/static/rs/js/angular-1.2.32.min.js"></script>
+<script src="/static/rs/js/angular-route-1.2.32.min.js"></script>
 <script src="/static/rs/js/rsapp.js"></script>
 
 </body>
