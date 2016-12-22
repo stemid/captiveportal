@@ -19,7 +19,7 @@ chain = iptc.Chain(table, args.chain)
 # Check if rule exists
 for rule in chain.rules:
     src_ip = rule.src
-    if src_ip.startswith(args.src_ip):
+    if src_ip.startswith(args.src_ip) and rule.protocol == args.protocol:
         print('Rule exists')
         break
 else:
