@@ -132,7 +132,7 @@ def dispatch_plugins():
         # status so we don't want rq to kill the job before JS has timed out.
         plugin_timeout = config.getint('portal', 'plugin_timeout')+30
 
-        # Run plugin.run()
+        # Queue plugin.run()
         try:
             plugin_job = Q.enqueue(
                 plugin_module.run,
