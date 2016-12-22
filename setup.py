@@ -9,6 +9,8 @@ setup(
     install_requires=[
         'rq',
         'bottle',
-        'sh'
+        'sh',
+        'redis',
+        'python-iptables'
     ]
 )
