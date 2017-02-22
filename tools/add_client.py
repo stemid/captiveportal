@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# Python helper tool to add IPtables rule using the iptc library. This must
+# of course run as root for iptc to work.
 
 from argparse import ArgumentParser
 from pprint import pprint as pp
