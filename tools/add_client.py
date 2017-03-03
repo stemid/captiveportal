@@ -2,31 +2,43 @@
 # Python helper tool to add IPtables rule using the iptc library. This must
 # of course run as root for iptc to work.
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, FileType
 from pprint import pprint as pp
+from configparser import RawConfigParser
 
-import iptc
+from storage import StorageRedis
+from client import Client
 
 parser = ArgumentParser()
 
-parser.add_argument('--chain', required=True)
-parser.add_argument('--protocol', required=True)
-parser.add_argument('--src-ip', required=True)
+parser.add_argument(
+    '--protocol',
+    required=True,
+    choices=['tcp', 'udp'],
+    help='Protocol for client'
+)
+
+parser.add_argument(
+    '--config',
+    type=FileType('r'),
+    required=True,
+    help='Configuration file'
+)
+
+parser.add_argument(
+    'src_ip',
+    help='Client source IP to add'
+)
 
 args = parser.parse_args()
 
-table = iptc.Table(iptc.Table.MANGLE)
-chain = iptc.Chain(table, args.chain)
+config = RawConfigParser()
+config.readfp(args.config)
 
-# Check if rule exists
-for rule in chain.rules:
-    src_ip = rule.src
-    if src_ip.startswith(args.src_ip) and rule.protocol == args.protocol:
-        print('Rule exists')
-        break
-else:
-    rule = iptc.Rule()
-    rule.src = args.src_ip
-    rule.protocol = args.protocol
-    rule.target = iptc.Target(rule, 'RETURN')
-    chain.insert_rule(rule)
+sr = StorageRedis(config=config)
+client = Client(
+    storage=sr,
+    client_id=args.src_ip,
+    protocol=args.protocol,
+    chain=config.get('iptables', 'chain')
+)

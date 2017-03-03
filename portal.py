@@ -1,4 +1,6 @@
-# Captiveportal web application using Bottle.py
+# Captiveportal
+# This is the web API the portal website speaks to and requests new clients
+# to be added by running jobs in rq.
 
 import json
 from pprint import pprint as pp
