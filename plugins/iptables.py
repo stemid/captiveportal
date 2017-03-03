@@ -43,7 +43,8 @@ def run(arg):
         l.setLevel(DEBUG)
         l.debug('debug logging enabled')
 
-    # Get client IP from webapp
+    # Get client IP from webapp, try HTTP_X_FORWARDED_FOR and fallback on
+    # REMOTE_ADDR.
     client_ip = environ.get(
         'HTTP_X_FORWARDED_FOR',
         environ.get('REMOTE_ADDR')
