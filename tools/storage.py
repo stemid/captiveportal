@@ -5,7 +5,22 @@ Database storage backends for client.py.
 import json
 from datetime import datetime
 
+import psycopg2
 from redis import Redis
+
+
+class StoragePostgres(object):
+
+    def __init__(self, **kw):
+        config = kw.pop('config')
+
+        self.conn = psycopg2.connect(
+            host=config.get('postgres', 'hostname'),
+            user=config.get('postgres', 'username'),
+            password=config.get('postgres', 'password'),
+            dbname=config.get('postgres', 'database'),
+            port=config.getint('postgres', 'port')
+        )
 
 
 class DateTimeEncoder(json.JSONEncoder):
@@ -20,6 +35,9 @@ class DateTimeEncoder(json.JSONEncoder):
 
 
 class StorageRedis(object):
+    """
+    Note: Abandoned this storage backend for Postgres.
+    """
 
     def __init__(self, **kw):
         config = kw.pop('config')
@@ -32,4 +50,4 @@ class StorageRedis(object):
 
     
     def add_client(self, client_id, **kw):
-        pass
+        raise NotImplemented
