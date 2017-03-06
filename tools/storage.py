@@ -6,10 +6,16 @@ import json
 from datetime import datetime
 
 import psycopg2
+from psycopg2.extras import DictCursor, register_ipaddress, Inet
 from redis import Redis
+
+from client import Client
 
 
 class StoragePostgres(object):
+    """
+    This requires python 3 for inet data type.
+    """
 
     def __init__(self, **kw):
         config = kw.pop('config')
@@ -19,8 +25,58 @@ class StoragePostgres(object):
             user=config.get('postgres', 'username'),
             password=config.get('postgres', 'password'),
             dbname=config.get('postgres', 'database'),
-            port=config.getint('postgres', 'port')
+            port=config.getint('postgres', 'port'),
+            sslmode='disable',
+            cursor_factory=DictCursor
         )
+        self.cur = self.conn.cursor()
+        register_ipaddress()
+
+
+    def get_client_by_id(self, client_id):
+        self.cur.execute(
+            'select * from client where client_id=%s',
+            (client_id,)
+        )
+        return self.cur.fetchone()
+
+
+    def get_client(self, ip_address, protocol):
+        self.cur.execute(
+            'select * from client where ip_address=%s and protocol=%s',
+            (Inet(ip_address), protocol, )
+        )
+        return self.cur.fetchone()
+
+
+    def write_client(self, client):
+        query = (
+            'insert into client (client_id, created, ip_address, protocol, '
+            'enabled, last_packets, last_activity) values (%s, %s, %s, %s, '
+            '%s, %s, %s) on conflict (client_id, ip_address, protocol) do '
+            'update set (enabled, last_packets, last_activity) = '
+            '(EXCLUDED.enabled, EXCLUDED.last_packets, '
+            'EXCLUDED.last_activity)'
+        )
+        self.cur.execute(
+            query,
+            (
+                client.client_id,
+                client.created,
+                client.ip_address,
+                client.protocol,
+                client.enabled,
+                client.last_packets,
+                client.last_activity
+            )
+        )
+        self.conn.commit()
+
+
+    def remove_client(self, client):
+        query = 'delete from client where client_id=%s'
+        self.cur.execute(query, (client.client_id,))
+        self.conn.commit()
 
 
 class DateTimeEncoder(json.JSONEncoder):

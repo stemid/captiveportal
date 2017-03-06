@@ -1,0 +1,2 @@
+class StorageNotFound(Exception):
+    pass

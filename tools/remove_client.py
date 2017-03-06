@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# Python helper tool to add IPtables rule using the iptc library. This must
-# of course run as root for iptc to work.
 
 from sys import exit
 from argparse import ArgumentParser, FileType
@@ -49,4 +47,4 @@ except errors.StorageNotFound:
     print('Could not find client')
     exit(1)
 
-client.commit()
+client.delete()
