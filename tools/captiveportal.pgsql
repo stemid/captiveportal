@@ -1,4 +1,4 @@
-create type if not exists inet_protocol as enum ('tcp', 'udp');
+create type inet_protocol as enum ('tcp', 'udp');
 
 create table if not exists client (
  client_id uuid NOT NULL primary key unique,
