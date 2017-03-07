@@ -48,7 +48,7 @@ class Client(object):
 
         # Init iptables
         self.table = iptc.Table(iptc.Table.MANGLE)
-        self.chain = iptc.Chain(table, self._chain)
+        self.chain = iptc.Chain(self.table, self._chain)
 
 
     def load_client(self, data):
