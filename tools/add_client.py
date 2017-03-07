@@ -49,4 +49,5 @@ except errors.StorageNotFound:
     print('Could not find client')
     exit(1)
 
+client.enabled = True
 client.commit()
