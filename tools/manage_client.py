@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# Python helper tool to add IPtables rule using the iptc library. This must
+# of course run as root for iptc to work.
 
 from sys import exit
 from argparse import ArgumentParser, FileType
@@ -9,7 +11,23 @@ import errors
 from storage import StoragePostgres
 from client import Client
 
-parser = ArgumentParser()
+parser = ArgumentParser((
+    'Handle clients in the captive portal. Default mode of operation is to'
+    ' create new clients and enable them. Other mode is to --disable the '
+    'client. And last mode is to --delete the client completely.'
+))
+
+parser.add_argument(
+    '--disable',
+    default=False,
+    help='Disable the client in the DB and delete from firewall'
+)
+
+parser.add_argument(
+    '--delete',
+    default=False,
+    help='Delete the client from DB and firewall'
+)
 
 parser.add_argument(
     '--protocol',
@@ -44,7 +62,15 @@ try:
         chain=config.get('iptables', 'chain')
     )
 except errors.StorageNotFound:
-    print('Could not find client')
+    print('Client not found')
     exit(1)
 
-client.delete()
+if args.disable:
+    # For non-existing clients this actually creates them in disabled mode.
+    client.enabled = False
+    client.commit()
+elif args.delete:
+    client.delete()
+else:
+    client.enabled = True
+    client.commit()
