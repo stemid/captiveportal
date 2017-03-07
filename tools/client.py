@@ -84,9 +84,14 @@ class Client(object):
 
 
     def find_rule(self, ip_address, protocol):
+        """
+        Takes an ipaddress.IPv4Interface object as ip_address argument.
+        """
+
         for rule in self.chain.rules:
             src_ip = rule.src
-            if src_ip.startswith(ip_address) and rule.protocol == protocol:
+            _ip = str(ip_address.ip)
+            if src_ip.startswith(str(ip_address.ip)) and rule.protocol == protocol:
                 return rule
         else:
             return None
