@@ -66,6 +66,8 @@ class Client(object):
 
         if self.enabled:
             self.commit_rule()
+        else:
+            self.remove_rule()
 
 
     def commit_client(self):
