@@ -93,7 +93,7 @@ class Client(object):
 
 
     def commit_rule(self):
-        rule = find_rule(self.ip_address, self.protocol)
+        rule = self.find_rule(self.ip_address, self.protocol)
         if not rule:
             rule = iptc.Rule()
             rule.src = self.ip_address
