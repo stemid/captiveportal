@@ -20,12 +20,14 @@ parser = ArgumentParser((
 parser.add_argument(
     '--disable',
     default=False,
+    type='store_true',
     help='Disable the client in the DB and delete from firewall'
 )
 
 parser.add_argument(
     '--delete',
     default=False,
+    type='store_true',
     help='Delete the client from DB and firewall'
 )
 
