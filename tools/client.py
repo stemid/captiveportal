@@ -5,7 +5,7 @@ Handles "clients" in IPtables for captive portal.
 from uuid import uuid4
 from datetime import datetime
 
-#import iptc
+import iptc
 
 import errors
 
@@ -15,7 +15,7 @@ class Client(object):
     def __init__(self, **kw):
         # Required parameters
         self.storage = kw.pop('storage')
-        self.chain = kw.pop('chain')
+        self._chain = kw.pop('chain')
 
         # First try to get an existing client by ID
         self.client_id = kw.pop('client_id', None)
@@ -46,6 +46,10 @@ class Client(object):
             self.last_packets = 0
             self.last_activity = None
 
+        # Init iptables
+        self.table = iptc.Table(iptc.Table.MANGLE)
+        self.chain = iptc.Chain(table, self._chain)
+
 
     def load_client(self, data):
         self.client_id = data.get('client_id')
@@ -59,7 +63,7 @@ class Client(object):
 
     def commit(self):
         self.commit_client()
-        #self.commit_rule()
+        self.commit_rule()
 
 
     def commit_client(self):
@@ -69,28 +73,31 @@ class Client(object):
 
 
     def delete(self):
-        #self.remove_rule()
+        self.remove_rule()
         self.storage.remove_client(self)
 
 
-    def find_rule(self):
-        raise NotImplemented
+    def remove_rule(self):
+        rule = self.find_rule(self.ip_address, self.protocol)
+        if rule:
+            self.chain.delete_rule(rule)
+
+
+    def find_rule(self, ip_address, protocol):
+        for rule in self.chain.rules:
+            src_ip = rule.src
+            if src_ip.startswith(ip_address) and rule.protocol == protocol:
+                return rule
+        else:
+            return None
 
 
     def commit_rule(self):
-        table = iptc.Table(iptc.Table.MANGLE)
-        chain = iptc.Chain(table, self.chain)
-
-        # Check if rule exists
-        for rule in chain.rules:
-            src_ip = rule.src
-            if src_ip.startswith(self.ip_address) and rule.protocol == self.protocol:
-                print('Rule exists')
-                break
-        else:
+        rule = find_rule(self.ip_address, self.protocol)
+        if not rule:
             rule = iptc.Rule()
             rule.src = self.ip_address
             rule.protocol = self.protocol
             rule.target = iptc.Target(rule, 'RETURN')
-            chain.insert_rule(rule)
+            self.chain.insert_rule(rule)
 
