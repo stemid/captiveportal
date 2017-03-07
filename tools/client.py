@@ -2,6 +2,7 @@
 Handles "clients" in IPtables for captive portal.
 """
 
+import ipaddress
 from uuid import uuid4
 from datetime import datetime
 
@@ -33,7 +34,7 @@ class Client(object):
 
         if self.ip_address and self.protocol:
             client_data = self.storage.get_client(
-                self.ip_address,
+                self._ip_address,
                 self.protocol
             )
 
@@ -82,7 +83,7 @@ class Client(object):
 
 
     def remove_rule(self):
-        rule = self.find_rule(self.ip_address, self.protocol)
+        rule = self.find_rule(self._ip_address, self.protocol)
         if rule:
             self.chain.delete_rule(rule)
 
@@ -91,6 +92,9 @@ class Client(object):
         """
         Takes an ipaddress.IPv4Interface object as ip_address argument.
         """
+
+        if not isinstance(ip_address, ipaddress.IPv4Interface):
+            raise ValueError('Invalid argument type')
 
         for rule in self.chain.rules:
             src_ip = rule.src
@@ -108,11 +112,26 @@ class Client(object):
 
 
     def commit_rule(self):
-        rule = self.find_rule(self.ip_address, self.protocol)
+        rule = self.find_rule(self._ip_address, self.protocol)
         if not rule:
             rule = iptc.Rule()
             rule.src = self.ip_address
             rule.protocol = self.protocol
             rule.target = iptc.Target(rule, 'RETURN')
             self.chain.insert_rule(rule)
+
+
+    @property
+    def ip_address(self):
+        return str(self._ip_address.ip)
+
+    @ip_address.setter
+    def ip_address(self, value):
+        if isinstance(value, str):
+            self._ip_address = ipaddress.IPv4Interface(value)
+        elif isinstance(value, ipaddress.IPv4Interface):
+            self._ip_address = value
+        else:
+            raise ValueError('Cannot set invalid value')
+
 
