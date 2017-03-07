@@ -90,8 +90,14 @@ class Client(object):
 
         for rule in self.chain.rules:
             src_ip = rule.src
-            _ip = str(ip_address.ip)
-            if src_ip.startswith(str(ip_address.ip)) and rule.protocol == protocol:
+
+            try:
+                _ip = str(ip_address.ip)
+            except:
+                # If we can't understand the argument just return None
+                return None
+
+            if src_ip.startswith(_ip) and rule.protocol == protocol:
                 return rule
         else:
             return None
