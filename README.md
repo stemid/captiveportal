@@ -4,8 +4,7 @@ A basic captive portal stack aiming to do the following.
 
   - Present a webpage to the user
   - User submits a form
-  - Plugins are executed with form data
-  - Plugins can deny a user access
+  - Backend evaluates client
   - User is granted access to whatever treasure the portal is guarding
 
 This is a commonly seen setup in public Wifi networks or hotspots. 
@@ -18,27 +17,51 @@ I've moved all examples from the [old wiki-page](https://wiki.sydit.se/teknik:gu
 
 # Get started
 
+Quick steps will setup a locally hosted dev server which will only run the sample_log plugin and log a line to captiveportal.log.
+
 ## Dependencies
 
-* Requires Python3 for a Postgres data type
-* Depends on iptables and conntrack
-* PostgreSQL for keeping track of clients
+* redis as backend for rq
 * rq for executing plugins (making firewall rules)
 
-## Run dev server
+## Install
 
     python setup.py install
-    python portal.py
 
 ## Run RQ worker in foreground
 
     rq worker -u redis://127.0.0.1:6379/
 
+## Run dev server
+
+    python portal.py
+
+Now visit the URL shown in the output and you'll be able to submit the portal form, wait for the background job to finish and be redirected to the default website (google.com). 
+
+By default only sample_log plugin is executed which logs a line to captiveportal.log when rq finishes running. 
+
 # Deployment
 
-See examples in docs/examples directory.
+See examples in docs/examples directory, along with all the cfg examples in the repo.
 
 # Technical details
+
+## Portal server
+
+First and foremost all traffic in a network must be routed through the server running this software stack.
+
+* IPtables
+* Captiveportal portal web app
+* Associated tools must be setup here
+
+## Portal web app
+
+All this is of course triggered by the portal application written in Python using Bottle.
+
+1. A clients redirected HTTP traffic puts them in the portal webpage.
+2. They send a POST form to the /approve url. This can be with user info, personal info, or simply an approve button for a EULA. 
+3. The portal executes its plugins in the order that their config section appears in plugins.cfg.
+4. Each plugin is passed the request object from Bottle which contains form values among other things.
 
 ## IPtables
 
@@ -49,15 +72,6 @@ At the heart is iptables doing the following.
 3. All other labeled traffic is dropped.
 4. Authenticated clients are jumped out of the mangle table before being labeled, using the RETURN target.
 5. Authenticated clients are also deleted from conntrack after having their exception rules created in the mangle table.
-
-## Portal
-
-All this is of course triggered by the portal application written in Python using Bottle.
-
-1. A clients redirected HTTP traffic puts them in the portal webpage.
-2. They send a POST form to the /approve url. This can be with user info, personal info, or simply an approve button for a EULA. 
-3. The portal executes its plugins in the order that their config section appears in plugins.cfg.
-4. Each plugin is passed the request object from Bottle which contains form values among other things.
 
 ## Plugins
 
