@@ -73,11 +73,12 @@ class Client(object):
         except Exception as e:
             # TODO: This should raise an exception and be handled further up
             # the stack by logging the error.
-            raise IPTCRuleNotFound(
-                'Could not find the iptables rule for {client_ip}'.format(
-                    client_ip=self.ip_address
-                )
-            )
+            raise
+            #raise IPTCRuleNotFound(
+            #    'Could not find the iptables rule for {client_ip}'.format(
+            #        client_ip=self.ip_address
+            #    )
+            #)
 
         if rule:
             (packet_count, byte_count) = rule.get_counters()
