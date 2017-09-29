@@ -96,11 +96,15 @@ except errors.StorageNotFound:
     exit(1)
 
 if args.disable:
-    # For non-existing clients this actually creates them in disabled mode.
-    client.enabled = False
-    client.commit()
-elif args.delete:
+    enabled = False
+else:
+    enabled = True
+
+if args.delete:
+    # This both deletes the iptables rule AND the client entry from DB.
     client.delete()
 else:
-    client.enabled = True
+    if args.expires:
+        client.expires = args.expires
+    client.enabled = enabled
     client.commit()
