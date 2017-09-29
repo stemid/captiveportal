@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 import iptc
 
-from errors import *
+from errors import StorageNotFound, IPTCRuleNotFound
 
 
 class Client(object):
@@ -32,11 +32,14 @@ class Client(object):
             self.ip_address = kw.pop('ip_address')
             self.protocol = kw.pop('protocol')
 
-            if self.ip_address and self.protocol:
-                client_data = self.storage.get_client(
-                    self._ip_address,
-                    self.protocol
-                )
+            client_data = self.storage.get_client(
+                self._ip_address,
+                self.protocol
+            )
+
+        # Init iptables
+        self.table = iptc.Table(iptc.Table.MANGLE)
+        self.chain = iptc.Chain(self.table, self._chain)
 
         if client_data:
             self.load_client(client_data)
@@ -49,10 +52,6 @@ class Client(object):
             self.last_packets = 0
             self.last_activity = None
             self.expires = datetime.now() + timedelta(days=1)
-
-        # Init iptables
-        self.table = iptc.Table(iptc.Table.MANGLE)
-        self.chain = iptc.Chain(self.table, self._chain)
 
 
     def load_client(self, data):
