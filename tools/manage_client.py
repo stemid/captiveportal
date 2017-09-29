@@ -6,7 +6,7 @@ from sys import exit
 from argparse import ArgumentParser, FileType
 from pprint import pprint as pp
 from configparser import RawConfigParser
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import errors
 from storage import StoragePostgres
