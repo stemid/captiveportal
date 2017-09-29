@@ -67,7 +67,10 @@ COMMIT
 -A PREROUTING -p tcp --dport domain -j DNAT --to-destination {{server}}
 {% endfor %}
 
-# Route any traffic out through the output NIC to act as gateway
+# Redirect all unmarked HTTP traffic to upstream Bluecoat
+#-A PREROUTING -p tcp --dport http -j DNAT --to 192.168.80.20:8080
+
+# Route any remaining unmarked traffic out through the output NIC to act as gateway
 -A POSTROUTING -o {{captiveportal_conf.output_nic}} -j MASQUERADE
 
 COMMIT
