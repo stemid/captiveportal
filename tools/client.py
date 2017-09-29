@@ -27,21 +27,23 @@ class Client(object):
             # found.
             if client_data is None:
                 raise StorageNotFound('Client not found')
+        else:
+            # Next try to get an existing client by IP and protocol
+            self.ip_address = kw.pop('ip_address')
+            self.protocol = kw.pop('protocol')
 
-        # Next try to get an existing client by IP and protocol
-        self.ip_address = kw.pop('ip_address')
-        self.protocol = kw.pop('protocol')
-
-        if self.ip_address and self.protocol:
-            client_data = self.storage.get_client(
-                self._ip_address,
-                self.protocol
-            )
+            if self.ip_address and self.protocol:
+                client_data = self.storage.get_client(
+                    self._ip_address,
+                    self.protocol
+                )
 
         if client_data:
             self.load_client(client_data)
         else:
             self.client_id = str(uuid4())
+            self.ip_address = kw.pop('ip_address')
+            self.protocol = kw.pop('protocol')
             self.created = datetime.now()
             self.enabled = False
             self.last_packets = 0
