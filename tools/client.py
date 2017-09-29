@@ -61,6 +61,7 @@ class Client(object):
         self.enabled = data.get('enabled')
         self.last_packets = data.get('last_packets')
         self.last_activity = data.get('last_activity')
+        self.expires = data.get('expires')
 
         # Try and find a rule for this client and with that rule also packet
         # count. Don't rely on it existing though.
