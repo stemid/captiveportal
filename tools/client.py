@@ -17,6 +17,9 @@ class Client(object):
         # Required parameters
         self.storage = kw.pop('storage')
         self._chain = kw.pop('chain')
+        
+        self._ip_address = kw.pop('ip_address', None)
+        self.protocol = kw.pop('protocol', None)
 
         # First try to get an existing client by ID
         self.client_id = kw.pop('client_id', None)
@@ -28,10 +31,6 @@ class Client(object):
             if client_data is None:
                 raise StorageNotFound('Client not found')
         else:
-            # Next try to get an existing client by IP and protocol
-            self.ip_address = kw.pop('ip_address')
-            self.protocol = kw.pop('protocol')
-
             client_data = self.storage.get_client(
                 self._ip_address,
                 self.protocol
@@ -45,8 +44,6 @@ class Client(object):
             self.load_client(client_data)
         else:
             self.client_id = str(uuid4())
-            self.ip_address = kw.pop('ip_address')
-            self.protocol = kw.pop('protocol')
             self.created = datetime.now()
             self.enabled = False
             self.last_packets = 0
