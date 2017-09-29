@@ -69,14 +69,15 @@ class Client(object):
         # count. Don't rely on it existing though.
         rule = None
         try:
-            rule = self.find_rule(self.ip_address, self.protocol)
+            rule = self.find_rule(self._ip_address, self.protocol)
         except Exception as e:
             # TODO: This should raise an exception and be handled further up
             # the stack by logging the error.
-            #raise IPTCRuleNotFound('Could not find the iptables rule for {client_ip}'.format(
-            # client_ip=self.ip_address
-            #))
-            return None
+            raise IPTCRuleNotFound(
+                'Could not find the iptables rule for {client_ip}'.format(
+                    client_ip=self.ip_address
+                )
+            )
 
         if rule:
             (packet_count, byte_count) = rule.get_counters()
