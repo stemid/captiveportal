@@ -31,11 +31,14 @@ config.readfp(args.config)
 
 sr = StoragePostgres(config=config)
 
-for client_id in sr.client_ids():
+# Get cursor from psycopg2
+client_ids = sr.client_ids()
+
+for client_id in client_ids:
     client = Client(
         storage=sr,
         chain=config.get('iptables', 'chain'),
-        client_id=client_id[0]
+        client_id=client_id
     )
 
     if datetime.now() > client.expires:
