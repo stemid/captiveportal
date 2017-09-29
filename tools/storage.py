@@ -37,7 +37,7 @@ class StoragePostgres(object):
         self.cur.execute(
             'select client_id from client'
         )
-        return self.cur
+        return self.cur.fetchall()
 
 
     def get_client_by_id(self, client_id):

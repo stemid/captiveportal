@@ -31,10 +31,7 @@ config.readfp(args.config)
 
 sr = StoragePostgres(config=config)
 
-# Get cursor from psycopg2
-client_ids = sr.client_ids()
-
-for client_id in client_ids:
+for (client_id) in sr.client_ids():
     client = Client(
         storage=sr,
         chain=config.get('iptables', 'chain'),
