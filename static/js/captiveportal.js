@@ -30,9 +30,9 @@ function do_success() {
     // If url does not start with http the window.location redirect
     // won't work. So prefix http to url.
     if (!url.startsWith('http')) {
-        url = 'http://'+url;
+        url = 'http://' + url;
     }
-    console.log('success: '+url);
+    console.log('success: ' + url);
     $('#error-box').html('<p>If you\'re not automatically redirected open your browser and try any website manually.</p>');
     $('#error-box').show();
     $('#statusDiv').html('');
@@ -51,8 +51,8 @@ function do_error(message) {
     $('#error-box').show();
     $('#error-box').html('<p>Failed. Reload page and try again or contact support.</p> ');
     if (message) {
-        console.log('server: '+message);
-        $('#error-box').append('<p>System response: '+message+'</p>');
+        console.log('server: ' + message);
+        $('#error-box').append('<p>System response: ' + message + '</p>');
     }
 }
 
@@ -61,21 +61,21 @@ function do_error(message) {
 function poll_jobs(data) {
     var promises = [];
 
-    if(debug) {
+    if (debug) {
         console.log('Jobs data: ', data);
     }
 
     // Push promises into array
-    for(var job in data) {
+    for (var job in data) {
         var job_id = data[job].id;
-        var api_url = '/job/'+job_id;
+        var api_url = '/job/' + job_id;
 
         if (debug) {
             console.log('Processing job: ', data[job]);
         }
 
         promises.push(new Promise(function(resolve, reject) {
-            var maxRun = plugin_timeout/2;
+            var maxRun = plugin_timeout / 2;
             var timesRun = 0;
 
             // Timer function that polls the API for job results
@@ -90,23 +90,23 @@ function poll_jobs(data) {
                     }
 
                     console.log(job_result);
-                    if(job_result.is_finished) {
+                    if (job_result.is_finished) {
                         console.log('Resolving job: ', job_result);
                         resolve(job_result);
                         clearTimeout(timer);
-                        return(true);
+                        return (true);
                     }
 
-                    if(job_result.is_failed) {
+                    if (job_result.is_failed) {
                         console.log('Job failed: ', job_result);
                         reject(job_result);
                         clearTimeout(timer);
-                        return(false);
+                        return (false);
                     }
                 });
 
                 ajaxReq.fail(function(XMLHttpRequest, textStatus, errorThrown) {
-                    console.log('Request Error: '+ XMLHttpRequest.responseText + ', status:' + XMLHttpRequest.status + ', status text: ' + XMLHttpRequest.statusText);
+                    console.log('Request Error: ' + XMLHttpRequest.responseText + ', status:' + XMLHttpRequest.status + ', status text: ' + XMLHttpRequest.statusText);
                     reject(XMLHttpRequest.responseText);
                 });
 
@@ -129,7 +129,7 @@ function poll_jobs(data) {
     Promise.all(promises).then(function(result) {
         var success = true;
 
-        for(var i=0;i<result.length;i++) {
+        for (var i = 0; i < result.length; i++) {
             var r = result[i].result;
             var meta = result[i].meta;
             if (meta.mandatory) {
@@ -146,10 +146,10 @@ function poll_jobs(data) {
             // Apple devices don't poll their captiveportal URL,
             // so this is for them. Android devices will do their
             // own polling and close the wifi-portal before this.
-            setTimeout(do_success, 30000);
+            setTimeout(do_success, 10000);
         }
 
-    // This is reject() above.
+        // This is reject() above.
     }, function(reason) {
         do_error(reason);
     });
@@ -157,7 +157,7 @@ function poll_jobs(data) {
 
 
 // Submit the form
-$('#approveForm').submit(function (event) {
+$('#approveForm').submit(function(event) {
     var api_url = '/approve';
     event.preventDefault();
     $('#error-box').hide();
@@ -170,7 +170,7 @@ $('#approveForm').submit(function (event) {
         ajaxReq.done(poll_jobs);
 
         ajaxReq.fail(function(XMLHttpRequest, textStatus, errorThrown) {
-            console.log('Request Error: '+ XMLHttpRequest.responseText + ', status:' + XMLHttpRequest.status + ', status text: ' + XMLHttpRequest.statusText);
+            console.log('Request Error: ' + XMLHttpRequest.responseText + ', status:' + XMLHttpRequest.status + ', status text: ' + XMLHttpRequest.statusText);
             do_error(XMLHttpRequest.responseText);
         });
     }
