@@ -18,8 +18,8 @@ class Client(object):
         self.storage = kw.pop('storage')
         self._chain = kw.pop('chain')
         
-        self._ip_address = kw.pop('ip_address', None)
-        self.protocol = kw.pop('protocol', None)
+        self.ip_address = kw.pop('ip_address', '127.0.0.1')
+        self.protocol = kw.pop('protocol', 'tcp')
 
         # First try to get an existing client by ID
         self.client_id = kw.pop('client_id', None)
