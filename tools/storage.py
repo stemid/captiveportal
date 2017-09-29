@@ -66,15 +66,15 @@ class StoragePostgres(object):
             'enabled, last_packets, last_activity, expires) values '
             '(%s, %s, %s, %s, %s, %s, %s, %s) on conflict (client_id, '
             'ip_address, protocol) do update set (enabled, last_packets, '
-            'last_activity) = (EXCLUDED.enabled, EXCLUDED.last_packets, '
-            'EXCLUDED.last_activity)'
+            'last_activity, expires) = (EXCLUDED.enabled, EXCLUDED.last_packets, '
+            'EXCLUDED.last_activity, EXCLUDED.expires)'
         )
         self.cur.execute(
             query,
             (
                 client.client_id,
                 client.created,
-                client._ip_address,
+                client.ip_address,
                 client.protocol,
                 client.enabled,
                 client.last_packets,
