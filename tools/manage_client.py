@@ -3,7 +3,7 @@
 # of course run as root for iptc to work.
 
 from sys import exit
-from argparse import ArgumentParser, FileType
+from argparse import ArgumentParser, FileType, ArgumentTypeError
 from pprint import pprint as pp
 from configparser import RawConfigParser
 from datetime import datetime, timedelta
@@ -17,19 +17,19 @@ from client import Client
 def valid_date_type(arg_date_str):
     """custom argparse *date* type for user dates values given from the command line"""
     try:
-        return datetime.datetime.strptime(arg_date_str, "%Y-%m-%d")
+        return datetime.strptime(arg_date_str, "%Y-%m-%d")
     except ValueError:
         msg = "Given Date ({0}) not valid! Expected format, YYYY-MM-DD!".format(arg_date_str)
-        raise argparse.ArgumentTypeError(msg)
+        raise ArgumentTypeError(msg)
 
 
 def valid_datetime_type(arg_datetime_str):
     """custom argparse type for user datetime values given from the command line"""
     try:
-        return datetime.datetime.strptime(arg_datetime_str, "%Y-%m-%d %H:%M")
+        return datetime.strptime(arg_datetime_str, "%Y-%m-%d %H:%M")
     except ValueError:
         msg = "Given Datetime ({0}) not valid! Expected format, 'YYYY-MM-DD HH:mm'!".format(arg_datetime_str)
-        raise argparse.ArgumentTypeError(msg) 
+        raise ArgumentTypeError(msg) 
 
 
 parser = ArgumentParser((
