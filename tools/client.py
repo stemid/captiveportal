@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 import iptc
 
-from errors import StorageNotFound
+from errors import *
 
 
 class Client(object):
