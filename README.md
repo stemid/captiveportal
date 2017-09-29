@@ -1,19 +1,20 @@
 # Captive Portal
 
-Captive portal webpage written with simplicity in mind. 
+A basic captive portal stack aiming to do the following. 
 
   - Present a webpage to the user
   - User submits a form
   - Plugins are executed with form data
+  - Plugins can deny a user access
   - User is granted access to whatever treasure the portal is guarding
 
 This is a commonly seen setup in public Wifi networks or hotspots. 
 
-This app was specifically written for such a hotspot and as such requires a lot of other configuration around it. This is an ongoing [documentation project here](https://wiki.sydit.se/teknik:guider:networking:captive_portal_med_iptables).
+At the heart of this stack is a simple Python Bottle application but this stack requires a lot of other configuration around it. 
 
 ## More documentation
 
-I've moved all examples from the [aforementioned wiki-page](https://wiki.sydit.se/teknik:guider:networking:captive_portal_med_iptables) to the docs/examples directory.
+I've moved all examples from the [old wiki-page](https://wiki.sydit.se/teknik:guider:networking:captive_portal_med_iptables) to the docs/examples directory.
 
 # Get started
 
