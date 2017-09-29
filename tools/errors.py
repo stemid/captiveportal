@@ -3,3 +3,6 @@ class StorageNotFound(Exception):
 
 class IPTCRuleExists(Exception):
     pass
+
+class IPTCRuleNotFound(Exception):
+    pass

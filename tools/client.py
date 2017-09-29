@@ -62,6 +62,26 @@ class Client(object):
         self.last_packets = data.get('last_packets')
         self.last_activity = data.get('last_activity')
 
+        # Try and find a rule for this client and with that rule also packet
+        # count. Don't rely on it existing though.
+        rule = None
+        try:
+            rule = self.find_rule(self.ip_address, self.protocol)
+        except Exception as e:
+            # TODO: This should raise an exception and be handled further up
+            # the stack by logging the error.
+            #raise IPTCRuleNotFound('Could not find the iptables rule for {client_ip}'.format(
+            # client_ip=self.ip_address
+            #))
+            return None
+
+        if rule:
+            (packet_count, byte_count) = rule.get_counters()
+
+            if self.last_packets < packet_count:
+                self.last_activity = datetime.now()
+                self.last_packets = packet_count
+
 
     def commit(self):
         self.commit_client()

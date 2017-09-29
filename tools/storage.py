@@ -31,6 +31,13 @@ class StoragePostgres(object):
         )
         self.cur = self.conn.cursor()
         register_ipaddress()
+    
+
+    def client_ids(self):
+        self.cur.execute(
+            'select client_id from client'
+        )
+        return self.cur
 
 
     def get_client_by_id(self, client_id):
