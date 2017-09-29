@@ -16,6 +16,7 @@ create table if not exists client (
  enabled boolean NOT NULL,
  last_packets bigint default 0,
  last_activity timestamp,
+ expires timestamp DEFAULT NULL,
  primary key (client_id, ip_address, protocol)
 );
 

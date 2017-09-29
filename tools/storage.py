@@ -56,10 +56,10 @@ class StoragePostgres(object):
     def write_client(self, client):
         query = (
             'insert into client (client_id, created, ip_address, protocol, '
-            'enabled, last_packets, last_activity) values (%s, %s, %s, %s, '
-            '%s, %s, %s) on conflict (client_id, ip_address, protocol) do '
-            'update set (enabled, last_packets, last_activity) = '
-            '(EXCLUDED.enabled, EXCLUDED.last_packets, '
+            'enabled, last_packets, last_activity, expires) values '
+            '(%s, %s, %s, %s, %s, %s, %s, %s) on conflict (client_id, '
+            'ip_address, protocol) do update set (enabled, last_packets, '
+            'last_activity) = (EXCLUDED.enabled, EXCLUDED.last_packets, '
             'EXCLUDED.last_activity)'
         )
         self.cur.execute(
@@ -71,7 +71,8 @@ class StoragePostgres(object):
                 client.protocol,
                 client.enabled,
                 client.last_packets,
-                client.last_activity
+                client.last_activity,
+                client.expires
             )
         )
         self.conn.commit()

@@ -6,16 +6,44 @@ from sys import exit
 from argparse import ArgumentParser, FileType
 from pprint import pprint as pp
 from configparser import RawConfigParser
+from datetime import datetime
 
 import errors
 from storage import StoragePostgres
 from client import Client
+
+
+# Custom defined argparse types for dates
+def valid_date_type(arg_date_str):
+    """custom argparse *date* type for user dates values given from the command line"""
+    try:
+        return datetime.datetime.strptime(arg_date_str, "%Y-%m-%d")
+    except ValueError:
+        msg = "Given Date ({0}) not valid! Expected format, YYYY-MM-DD!".format(arg_date_str)
+        raise argparse.ArgumentTypeError(msg)
+
+
+def valid_datetime_type(arg_datetime_str):
+    """custom argparse type for user datetime values given from the command line"""
+    try:
+        return datetime.datetime.strptime(arg_datetime_str, "%Y-%m-%d %H:%M")
+    except ValueError:
+        msg = "Given Datetime ({0}) not valid! Expected format, 'YYYY-MM-DD HH:mm'!".format(arg_datetime_str)
+        raise argparse.ArgumentTypeError(msg) 
+
 
 parser = ArgumentParser((
     'Handle clients in the captive portal. Default mode of operation is to'
     ' create new clients and enable them. Other mode is to --disable the '
     'client. And last mode is to --delete the client completely.'
 ))
+
+parser.add_argument(
+    '--expires',
+    type=valid_datetime_type,
+    default=datetime.now() + timedelta(days=1),
+    help='Expiry date in format "YYYY-MM-DD HH:mm"'
+)
 
 parser.add_argument(
     '--disable',

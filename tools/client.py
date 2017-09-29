@@ -4,11 +4,11 @@ Handles "clients" in IPtables for captive portal.
 
 import ipaddress
 from uuid import uuid4
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import iptc
 
-import errors
+from errors import StorageNotFound
 
 
 class Client(object):
@@ -46,6 +46,7 @@ class Client(object):
             self.enabled = False
             self.last_packets = 0
             self.last_activity = None
+            self.expires = datetime.now() + timedelta(days=1)
 
         # Init iptables
         self.table = iptc.Table(iptc.Table.MANGLE)
