@@ -33,7 +33,7 @@ function do_success() {
         url = 'http://' + url;
     }
     console.log('success: ' + url);
-    $('#error-box').html('<p>If you\'re not automatically redirected open your browser and try any website manually.</p>');
+    $('#error-box').html('<p>If you\'re not automatically redirected <a href="https://www.google.com/">click here</a>.</p>');
     $('#error-box').show();
     $('#statusDiv').html('');
     $('#approveButton').prop('disabled', false);
@@ -146,7 +146,7 @@ function poll_jobs(data) {
             // Apple devices don't poll their captiveportal URL,
             // so this is for them. Android devices will do their
             // own polling and close the wifi-portal before this.
-            setTimeout(do_success, 10000);
+            setTimeout(do_success, 1000);
         }
 
         // This is reject() above.
