@@ -51,18 +51,19 @@ See examples in docs/examples directory, along with all the cfg examples in the 
 
 First and foremost all traffic in a network must be routed through the server running this software stack.
 
-* IPtables
+* IPtables & ipset
 * Captiveportal portal web app
 * Associated tools must be setup here
 
 ## Portal web app
 
-All this is of course triggered by the portal application written in Python using Bottle.
+All this is works with the portal application written in Python3 using Bottle.
 
 1. A clients redirected HTTP traffic puts them in the portal webpage.
-2. They send a POST form to the /approve url. This can be with user info, personal info, or simply an approve button for a EULA. 
-3. The portal executes its plugins in the order that their config section appears in plugins.cfg.
-4. Each plugin is passed the request object from Bottle which contains form values among other things.
+2. Hijacked DNS ensures that all their HTTP requests end up on the portal server, also triggering wifi hotspot prompts on devices.
+3. They send a POST form to the /approve url. This can be with user info, personal info, or simply an approve button for a EULA. 
+4. The portal executes its plugins in the order that their config section appears in plugins.cfg.
+5. Each plugin is passed the request object from Bottle which contains form values among other things.
 
 ## IPtables
 
@@ -71,8 +72,9 @@ At the heart is iptables doing the following.
 1. Labeling all traffic with the number 99 in the mangle table.
 2. Labeled ICMP, DNS and HTTP traffic is redirected to the portal server in the nat table.
 3. All other labeled traffic is dropped.
-4. Authenticated clients are jumped out of the mangle table before being labeled, using the RETURN target.
-5. Authenticated clients are also deleted from conntrack after having their exception rules created in the mangle table.
+4. Authenticated clients are put into an ipset.
+5. Any packet matching an IP in the ipset is jumped out of the mangle table before being labeled, using the RETURN target.
+6. Along with adding or removing IPs to an ipset, the IP is also handled by conntrack to ensure that no old connections linger.
 
 ## Plugins
 
@@ -94,11 +96,21 @@ Also with plugins there are options to connect other authentication methods like
 
 ### Available Plugins
 
-There's only one relevant plugin right now, iptables. But the idea is that you could add RADIUS plugins or other services. The mandatory flag in plugins.cfg decides if a plugin must pass before a client is authenticated. So you can string several plugins together for several actions that must be performed. 
+The idea is that you could add RADIUS plugins or other services. The mandatory flag in plugins.cfg decides if a plugin must pass before a client is authenticated. So you can string several plugins together for several actions that must be performed. 
 
 Each plugin responds with JSON.
 
-#### iptables plugin
+#### iptables
+
+**DEPRECATED IN FAVOR OF IPSET**
 
 1. Executes the ``iptables_cmd`` defined in plugins.cfg, with arguments being the client IP and potentially the client MAC address.
 2. Ensures the exit code of ``iptables_cmd`` is 0, if not 0 it sets a failed flag in its JSON response.
+
+The only thing this plugin does, besides run the iptables command, is that it also attempts to lookup a HW address of the client through arp.
+
+In the environment I made this app for the arp thing was impossible and iptables command is not concurrent so I've abandoned this plugin.
+
+#### ipset
+
+This plugin is also basically a wrapper around executing the ipset command but it makes no attempt to lookup a HW address in arp.
