@@ -72,7 +72,7 @@ def run(arg):
                 client_ip
             )
         except Exception as e:
-            l.warn('Failed to get client HW address: {error}'.format(
+            l.info('Failed to get client HW address: {error}'.format(
                 error=str(e)
             ))
             error_msg = str(e)
@@ -97,7 +97,8 @@ def run(arg):
                 error=error_msg
             ))
             iptables_failed = True
-            pass
+            raise
+
         except Exception as e:
             l.warn('{cmd}: failed: {error}'.format(
                 cmd=('iptables', iptables_cmd),
@@ -105,7 +106,7 @@ def run(arg):
             ))
             error_msg = str(e)
             iptables_failed = True
-            pass
+            raise
 
         if rc.exit_code == 0:
             l.debug('Created iptables IP rule successfully')
