@@ -21,6 +21,7 @@ Quick steps will setup a locally hosted dev server which will only run the sampl
 
 ## Dependencies
 
+* Python 3 (I haven't tested any backwards compatibility)
 * redis as backend for rq
 * rq for executing plugins (making firewall rules)
 
