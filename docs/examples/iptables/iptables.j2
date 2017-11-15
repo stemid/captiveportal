@@ -31,6 +31,15 @@
 # iptables -t mangle -I internet -m tcp -p tcp --source 1.2.3.4 -j RETURN
 # iptables -t mangle -I internet -m udp -p udp --source 1.2.3.4 -j RETURN
 
+# You can also use ipset like this.
+# This matches a pre-defined ipset instead of specific addresses, ipset type hash:ip.
+#-A internet -m set --match-set {{ipset_whitelist_clients}} src -j RETURN
+#-A internet -m set --match-set {{ipset_auth_clients}} src -j RETURN
+
+# These are for mac-addresses, ipset type hash:mac.
+#-A internet -m set --match-set {{macset_whitelist_clients}} src -j RETURN
+#-A internet -m set --match-set {{macset_auth_clients}} src -j RETURN
+
 # For MGMT SSH traffic return out of internet chain so it's not marked
 -A internet -p tcp -d {{captiveportal_conf.webportal_ip}} --dport ssh -j RETURN
 
