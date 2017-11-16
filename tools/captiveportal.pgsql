@@ -8,7 +8,7 @@ BEGIN
     --more types here...
 END$$;
 
-create table if not exists client (
+create table if not exists authenticated_clients (
  client_id uuid NOT NULL unique,
  created timestamp NOT NULL,
  ip_address inet NOT NULL,
@@ -20,4 +20,4 @@ create table if not exists client (
  primary key (client_id, ip_address, protocol)
 );
 
-create index if not exists client_ip_address_index on client (ip_address);
+create index if not exists client_ip_address_index on authenticated_clients (ip_address);

@@ -35,14 +35,14 @@ class StoragePostgres(object):
 
     def client_ids(self):
         self.cur.execute(
-            'select client_id from client'
+            'select client_id from authenticated_clients'
         )
         return self.cur.fetchall()
 
 
     def get_client_by_id(self, client_id):
         self.cur.execute(
-            'select * from client where client_id=%s',
+            'select * from authenticated_clients where client_id=%s',
             (client_id,)
         )
         return self.cur.fetchone()
@@ -54,7 +54,7 @@ class StoragePostgres(object):
         """
 
         self.cur.execute(
-            'select * from client where ip_address=%s and protocol=%s',
+            'select * from authenticated_clients where ip_address=%s and protocol=%s',
             (ip_address, protocol, )
         )
         return self.cur.fetchone()
@@ -62,7 +62,7 @@ class StoragePostgres(object):
 
     def write_client(self, client):
         query = (
-            'insert into client (client_id, created, ip_address, protocol, '
+            'insert into authenticated_clients (client_id, created, ip_address, protocol, '
             'enabled, last_packets, last_activity, expires) values '
             '(%s, %s, %s, %s, %s, %s, %s, %s) on conflict (client_id, '
             'ip_address, protocol) do update set (enabled, last_packets, '
@@ -86,7 +86,7 @@ class StoragePostgres(object):
 
 
     def remove_client(self, client):
-        query = 'delete from client where client_id=%s'
+        query = 'delete from authenticated_clients where client_id=%s'
         self.cur.execute(query, (client.client_id,))
         self.conn.commit()
 
