@@ -17,10 +17,9 @@ def run_ipset(command, *args, **kw):
         args=' '.join(args)
     )
 
-    proc = subprocess.call(
+    output = subprocess.check_output(
         shlex.split(full_command),
-        stdout=subprocess.PIPE,
         timeout=timeout
     )
 
-    return proc
+    return output
