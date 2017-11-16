@@ -2,6 +2,7 @@
 # Python helper tool to add IPtables rule using the iptc library. This must
 # of course run as root for iptc to work.
 
+from os import getuid
 from sys import exit
 from argparse import ArgumentParser, FileType, ArgumentTypeError
 from pprint import pprint as pp
@@ -97,13 +98,18 @@ config.readfp(args.config)
 sr = StoragePostgres(config=config)
 
 if args.refresh:
+    if getuid() == 0:
+        use_sudo = False
+    else:
+        use_sudo = True
+
     # Sync clients and packet counters from ipset into storage.
     proc = run_ipset(
         'list',
-        config.get('ipset', 'set_name'),
+        config.get('ipset', 'ipset_name'),
         '-output',
         'save',
-        use_sudo=False,
+        use_sudo=use_sudo,
         timeout=600
     )
 
@@ -130,7 +136,7 @@ if args.refresh:
             client = Client(
                 storage=sr,
                 ip_address=client_ip,
-                ipset_name=config.get('ipset', 'set_name')
+                ipset_name=config.get('ipset', 'ipset_name')
             )
         except Exception as e:
             if args.verbose:
@@ -173,7 +179,7 @@ for src_ip in args.src_ip:
     client = Client(
         storage=sr,
         ip_address=src_ip,
-        ipset_name=config.get('ipset', 'set_name')
+        ipset_name=config.get('ipset', 'ipset_name')
     )
 
     if args.delete:
