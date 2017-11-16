@@ -107,6 +107,8 @@ if args.refresh:
         timeout=600
     )
 
+    current_date = datetime.now()
+
     for _line in proc.stdout.splitlines():
         # Convert from bytestring first
         line = _line.decode('utf-8')
@@ -142,9 +144,16 @@ if args.refresh:
             client.commit()
 
         if int(packets_val) != client.last_packets:
-            client.last_activity = datetime.now()
+            client.last_activity = current_date
             client.last_packets = packets_val
             client.commit()
+
+        # Also do a purge of clients that have no traffic for 24 hrs
+        if client.last_activity:
+            time_diff = client.last_activity-client.created
+            if client.last_packets >= packets_val and time_diff.days >= 1:
+                client.enabled = False
+                client.commit()
 
 for src_ip in args.src_ip:
     # Get client by IP or create a new one.
