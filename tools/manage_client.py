@@ -141,11 +141,19 @@ if args.refresh:
             continue
 
         if client.new:
+            if args.verbose:
+                print('Creating new client:{ip}'.format(
+                    ip=client.ip_address
+                ))
             client.commit()
 
         if int(packets_val) != client.last_packets:
             client.last_activity = current_date
             client.last_packets = int(packets_val)
+            if args.verbose:
+                print('Updating activity for client:{ip}'.format(
+                    ip=client.ip_address
+                ))
             client.commit()
 
         # Also do a purge of clients that have no traffic for 24 hrs
@@ -154,6 +162,10 @@ if args.refresh:
 
             if client.last_packets >= int(packets_val) and time_diff.days >= 1:
                 client.enabled = False
+                if args.verbose:
+                    print('Enabling client:{ip}'.format(
+                        ip=client.ip_address
+                    ))
                 client.commit()
 
 for src_ip in args.src_ip:
