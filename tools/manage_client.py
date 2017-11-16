@@ -102,7 +102,8 @@ if args.refresh:
         'list',
         config.get('ipset', 'set_name'),
         '-output',
-        'save'
+        'save',
+        use_sudo=False
     )
 
     for _line in proc.stdout.splitlines():

@@ -16,18 +16,10 @@ def run_ipset(command, *args, **kw):
         args=' '.join(args)
     )
 
-    proc = subprocess.run(
+    proc = subprocess.call(
         shlex.split(full_command),
         stdout=subprocess.PIPE,
-        timeout=2,
-        check=True
+        timeout=2
     )
-
-    #proc = subprocess.Popen(
-    #    shlex.split(full_command),
-    #    stdout=subprocess.PIPE
-    #)
-
-    #(output, error) = proc.communicate(timeout=2)
 
     return proc
