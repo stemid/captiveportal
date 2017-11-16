@@ -109,7 +109,7 @@ if args.refresh:
 
     current_date = datetime.now()
 
-    for _line in proc.stdout.splitlines():
+    for _line in proc.splitlines():
         # Convert from bytestring first
         line = _line.decode('utf-8')
 
