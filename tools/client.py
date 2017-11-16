@@ -16,6 +16,7 @@ class Client(object):
         # Required parameters
         self.storage = kw.pop('storage')
         self.ipset_name = kw.pop('ipset_name')
+        self.use_sudo = kw.pop('use_sudo', False)
         
         self.ip_address = kw.pop('ip_address', '127.0.0.1')
         self.protocol = kw.pop('protocol', 'tcp')
@@ -89,7 +90,8 @@ class Client(object):
             'del',
             '-exist',
             self.ipset_name,
-            self.ip_address
+            self.ip_address,
+            use_sudo=self.use_sudo
         )
 
 
@@ -98,7 +100,8 @@ class Client(object):
             'add',
             '-exist',
             self.ipset_name,
-            self.ip_address
+            self.ip_address,
+            use_sudo=self.use_sudo
         )
 
 

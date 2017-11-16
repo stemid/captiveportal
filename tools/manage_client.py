@@ -136,7 +136,8 @@ if args.refresh:
             client = Client(
                 storage=sr,
                 ip_address=client_ip,
-                ipset_name=config.get('ipset', 'ipset_name')
+                ipset_name=config.get('ipset', 'ipset_name'),
+                use_sudo=use_sudo
             )
         except Exception as e:
             if args.verbose:
