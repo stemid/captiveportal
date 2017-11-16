@@ -151,6 +151,7 @@ if args.refresh:
                 print('Creating new client:{ip}'.format(
                     ip=client.ip_address
                 ))
+            client.enabled = True
             client.commit()
 
         if int(packets_val) != client.last_packets:
