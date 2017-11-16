@@ -163,7 +163,7 @@ if args.refresh:
             if client.last_packets >= int(packets_val) and time_diff.days >= 1:
                 client.enabled = False
                 if args.verbose:
-                    print('Enabling client:{ip}'.format(
+                    print('Disabling client:{ip}'.format(
                         ip=client.ip_address
                     ))
                 client.commit()
