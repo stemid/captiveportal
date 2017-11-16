@@ -145,13 +145,14 @@ if args.refresh:
 
         if int(packets_val) != client.last_packets:
             client.last_activity = current_date
-            client.last_packets = packets_val
+            client.last_packets = int(packets_val)
             client.commit()
 
         # Also do a purge of clients that have no traffic for 24 hrs
         if client.last_activity:
             time_diff = client.last_activity-client.created
-            if client.last_packets >= packets_val and time_diff.days >= 1:
+
+            if client.last_packets >= int(packets_val) and time_diff.days >= 1:
                 client.enabled = False
                 client.commit()
 
