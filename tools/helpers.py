@@ -4,6 +4,7 @@ import shlex
 
 def run_ipset(command, *args, **kw):
     use_sudo = kw.get('use_sudo', True)
+    timeout = kw.get('timeout', 2)
 
     if use_sudo:
         ipset_cmd = 'sudo ipset'
@@ -19,7 +20,7 @@ def run_ipset(command, *args, **kw):
     proc = subprocess.call(
         shlex.split(full_command),
         stdout=subprocess.PIPE,
-        timeout=2
+        timeout=timeout
     )
 
     return proc
