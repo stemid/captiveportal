@@ -104,7 +104,7 @@ if args.refresh:
         '-output',
         'save',
         use_sudo=False,
-        timeout=120
+        timeout=600
     )
 
     for _line in proc.stdout.splitlines():
