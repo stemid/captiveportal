@@ -57,7 +57,9 @@ def run(arg):
     try:
         socket.inet_aton(client_ip)
     except socket.error:
-        l.error('Client IP-address is invalid')
+        l.error('Client ip:{ip} is invalid'.format(
+            ip=repr(client_ip)
+        ))
         return {
             'error': str(e),
             'failed': True
@@ -109,7 +111,9 @@ def run(arg):
             raise
 
         if rc.exit_code == 0:
-            l.debug('Created iptables IP rule successfully')
+            l.debug('Created iptables rule for client:{ip}'.format(
+                ip=client_ip
+            ))
 
     # If all else fails, error! This will be shown to end users.
     return {
