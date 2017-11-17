@@ -10,10 +10,9 @@ from configparser import RawConfigParser
 from datetime import datetime, timedelta
 from io import BytesIO
 
-import errors
-from helpers import run_ipset
-from storage import StoragePostgres
-from client import Client
+from portalclientlib.client import Client
+from portalclientlib.storage import StoragePostgres
+from portalclientlib.helpers import run_ipset
 
 
 # Custom defined argparse types for dates
@@ -158,7 +157,7 @@ if args.refresh:
         if int(packets_val) != client.last_packets:
             client.last_activity = current_date
             client.last_packets = int(packets_val)
-            if args.verbose:
+            if args.verbose > 1:
                 print('Updating activity for client:{ip}'.format(
                     ip=client.ip_address
                 ))
