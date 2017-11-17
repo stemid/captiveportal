@@ -140,7 +140,9 @@ def mac_from_ip(l, arping_args, ip):
     output.seek(0)
 
     # Parse HW address from output
-    for line in output:
+    for _line in output:
+        line = _line.decode('utf-8')
+
         line_start = 'Unicast reply from {ip} '.format(
             ip=ip
         )
