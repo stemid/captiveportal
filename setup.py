@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="CaptivePortal",
+    name="portalclientlib",
     version="0.1",
-    description="Captive Portal webpage",
+    description="Captive Portal client lib",
     author="Stefan Midjich",
-    packages=find_packages(),
+    packages=['portalclientlib'],
     install_requires=[
         'rq',
         'bottle',
