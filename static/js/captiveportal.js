@@ -123,12 +123,12 @@ function poll_jobs(data) {
                     reject("Job polling timed out");
                     return;
                 } else {
-                    timer = setTimeout(pollJob, 1500);
+                    timer = setTimeout(pollJob, 2000);
                 }
             };
 
             // Here I just want the pollJob function to run immediately
-            var timer = setTimeout(pollJob, 200);
+            var timer = setTimeout(pollJob, 1000);
         }));
     }
 
@@ -142,7 +142,7 @@ function poll_jobs(data) {
         if (success === true) {
             // This timeout might be important if device wifi prompts seem to
             // hang on the portal without redirecting on their own.
-            setTimeout(do_success, 200);
+            setTimeout(do_success, 2000);
         }
 
         // This is reject() above.
