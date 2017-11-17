@@ -165,7 +165,7 @@ if args.refresh:
 
         # Also do a purge of clients that have no traffic for 24 hrs
         if client.last_activity:
-            time_diff = client.last_activity-client.created
+            time_diff = current_date-client.last_activity
 
             if client.last_packets >= int(packets_val) and time_diff.days >= 1:
                 client.enabled = False
@@ -174,6 +174,10 @@ if args.refresh:
                         ip=client.ip_address
                     ))
                 client.commit()
+            else:
+                if not client.enabled:
+                    client.enabled = True
+                    client.commit()
 
 for src_ip in args.src_ip:
     # Get client by IP or create a new one.
