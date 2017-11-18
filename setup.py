@@ -5,12 +5,5 @@ setup(
     version="0.1",
     description="Captive Portal client lib",
     author="Stefan Midjich",
-    packages=['portalclientlib'],
-    install_requires=[
-        'rq',
-        'bottle',
-        'sh',
-        'redis',
-        'python-iptables'
-    ]
+    packages=['portalclientlib']
 )
