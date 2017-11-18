@@ -2,4 +2,4 @@ rq
 redis
 Bottle
 sh
-python-iptables
+python-iptablespython-iptables
