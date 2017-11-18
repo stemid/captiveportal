@@ -17,11 +17,18 @@ class Client(object):
         self.storage = kw.pop('storage')
         self.ipset_name = kw.pop('ipset_name')
         self.use_sudo = kw.pop('use_sudo', False)
-        
+
+        # Default attribute values
         self.ip_address = kw.pop('ip_address', '127.0.0.1')
         self.protocol = kw.pop('protocol', 'tcp')
 
-        self.new = False
+        self._enabled = False
+        self._last_packets = 0
+        self._last_activity = None
+        self._expires = datetime.now() + timedelta(days=1)
+
+        self._new = False
+        self._commit = False
 
         # First try to get an existing client by ID
         self.client_id = kw.pop('client_id', None)
@@ -45,13 +52,12 @@ class Client(object):
         if client_data:
             self.load_client(client_data)
         else:
+            # Creating a new client, not yet comitted.
             self.client_id = str(uuid4())
             self.created = datetime.now()
-            self.enabled = False
-            self.last_packets = 0
-            self.last_activity = None
-            self.expires = datetime.now() + timedelta(days=1)
-            self.new = True
+
+            self._new = True
+            self._commit = True
 
 
     def load_client(self, data):
@@ -66,6 +72,9 @@ class Client(object):
 
 
     def commit(self):
+        if not self._commit:
+            return False
+
         self.commit_client()
 
         if self.enabled:
@@ -106,9 +115,22 @@ class Client(object):
 
 
     @property
+    def enabled(self):
+        return self._enabled
+
+    @enabled.setter
+    def enabled(self, value):
+        if not isinstance(value, bool):
+            return False
+
+        if value != self.enabled:
+            self._commit = True
+            self._enabled = value
+
+
+    @property
     def ip_address(self):
         return str(self._ip_address.ip)
-
 
     @ip_address.setter
     def ip_address(self, value):
@@ -120,3 +142,40 @@ class Client(object):
             raise ValueError('Cannot set invalid value')
 
 
+    @property
+    def last_activity(self):
+        return self._last_activity
+
+    @last_activity.setter
+    def last_activity(self, value):
+        if not isinstance(value, datetime):
+            return False
+
+        if value != self.last_activity:
+            self._commit = True
+            self._last_activity = value
+
+
+    @property
+    def last_packets(self):
+        return self._last_packets
+
+    @last_packets.setter
+    def last_packets(self, value):
+        if value != self.last_packets:
+            self._commit = True
+            self._last_packets = int(value)
+
+
+    @property
+    def expires(self):
+        return self._expires
+
+    @expires.setter
+    def expires(self, value):
+        if not isinstance(value, datetime):
+            return False
+
+        if value != self.expires:
+            self._commit = True
+            self._expires = value

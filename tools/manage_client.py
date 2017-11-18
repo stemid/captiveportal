@@ -30,8 +30,9 @@ def valid_datetime_type(arg_datetime_str):
     try:
         return datetime.strptime(arg_datetime_str, "%Y-%m-%d %H:%M")
     except ValueError:
-        msg = "Given Datetime ({0}) not valid! Expected format, 'YYYY-MM-DD HH:mm'!".format(arg_datetime_str)
-        raise ArgumentTypeError(msg) 
+        msg = "Given Datetime ({0}) not valid! Expected format, 'YYYY-MM-DD HH:mm'!".format(
+            arg_datetime_str)
+        raise ArgumentTypeError(msg)
 
 
 parser = ArgumentParser(
@@ -112,11 +113,12 @@ if args.refresh:
         timeout=600
     )
 
-    current_date = datetime.now()
+    current_time = datetime.now()
 
     for _line in proc.splitlines():
         # Convert from bytestring first
         line = _line.decode('utf-8')
+        expired = False
 
         if not line.startswith('add'):
             continue
@@ -144,40 +146,55 @@ if args.refresh:
                     ip=client_ip,
                     error=str(e)
                 ))
+
+            if args.verbose > 2:
+                raise
+
             continue
 
-        if client.new:
+        if current_time > client.expires:
+            expired = True
+
+        if client._new:
             if args.verbose:
                 print('Creating new client:{ip}'.format(
                     ip=client.ip_address
                 ))
             client.enabled = True
-            client.commit()
 
-        if int(packets_val) != client.last_packets:
-            client.last_activity = current_date
-            client.last_packets = int(packets_val)
-            if args.verbose > 1:
-                print('Updating activity for client:{ip}'.format(
+        if not client.last_activity and expired:
+            if args.verbose:
+                print('Client:{ip} disabled, no activity ever logged'.format(
                     ip=client.ip_address
                 ))
+
+            client.enabled = False
             client.commit()
+            # No more processing for these types of clients.
+            continue
 
-        # Also do a purge of clients that have no traffic for 24 hrs
-        if client.last_activity:
-            time_diff = current_date-client.last_activity
+        if int(packets_val) > client.last_packets:
+            if args.verbose > 1:
+                print('Client:{ip} updated'.format(
+                    ip=client.ip_address
+                ))
 
-            if client.last_packets >= int(packets_val) and time_diff.days >= 1:
-                client.enabled = False
+            client.last_packets = packets_val
+            client.last_activity = current_time
+
+        if client.last_activity and expired:
+            active_diff = current_time - client.last_activity
+
+            if active_diff.days >= 1 and client.last_activity != current_time:
                 if args.verbose:
-                    print('Disabling client:{ip}'.format(
+                    print('Client:{ip} disabled, no activity since "{last_activity}"'.format(
+                        last_activity=client.last_activity,
                         ip=client.ip_address
                     ))
-                client.commit()
-            else:
-                if not client.enabled:
-                    client.enabled = True
-                    client.commit()
+
+                client.enabled = False
+
+        client.commit()
 
 for src_ip in args.src_ip:
     # Get client by IP or create a new one.
