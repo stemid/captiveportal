@@ -3,7 +3,7 @@ import subprocess
 import shlex
 
 def run_ipset(command, *args, **kw):
-    use_sudo = kw.get('use_sudo', True)
+    use_sudo = kw.get('use_sudo', False)
     timeout = kw.get('timeout', 2)
 
     if use_sudo:

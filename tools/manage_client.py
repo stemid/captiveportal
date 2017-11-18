@@ -97,12 +97,12 @@ config.readfp(args.config)
 
 sr = StoragePostgres(config=config)
 
-if args.refresh:
-    if getuid() == 0:
-        use_sudo = False
-    else:
-        use_sudo = True
+if getuid() == 0:
+    use_sudo = False
+else:
+    use_sudo = True
 
+if args.refresh:
     # Sync clients and packet counters from ipset into storage.
     proc = run_ipset(
         'list',
@@ -201,7 +201,8 @@ for src_ip in args.src_ip:
     client = Client(
         storage=sr,
         ip_address=src_ip,
-        ipset_name=config.get('ipset', 'ipset_name')
+        ipset_name=config.get('ipset', 'ipset_name'),
+        use_sudo=use_sudo
     )
 
     if args.delete:
