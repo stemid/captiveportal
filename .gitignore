@@ -7,3 +7,4 @@ dist/
 *.egg-info
 *_local.cfg
 .vscode
+.venv
