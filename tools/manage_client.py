@@ -106,7 +106,7 @@ if args.refresh:
     # Sync clients and packet counters from ipset into storage.
     proc = run_ipset(
         'list',
-        config.get('ipset', 'ipset_name'),
+        config.get('portalclient', 'ipset_name'),
         '-output',
         'save',
         use_sudo=use_sudo,
@@ -137,7 +137,7 @@ if args.refresh:
             client = Client(
                 storage=sr,
                 ip_address=client_ip,
-                ipset_name=config.get('ipset', 'ipset_name'),
+                ipset_name=config.get('portalclient', 'ipset_name'),
                 use_sudo=use_sudo
             )
         except Exception as e:
@@ -201,7 +201,7 @@ for src_ip in args.src_ip:
     client = Client(
         storage=sr,
         ip_address=src_ip,
-        ipset_name=config.get('ipset', 'ipset_name'),
+        ipset_name=config.get('portalclient', 'ipset_name'),
         use_sudo=use_sudo
     )
 
