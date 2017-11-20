@@ -48,14 +48,14 @@ class StoragePostgres(object):
         return self.cur.fetchone()
 
 
-    def get_client(self, ip_address, protocol):
+    def get_client(self, ip_address):
         """
         Expects an ipaddress.IPv4Interface as ip_address argument.
         """
 
         self.cur.execute(
-            'select * from authenticated_clients where ip_address=%s and protocol=%s',
-            (ip_address, protocol, )
+            'select * from authenticated_clients where ip_address=%s',
+            (ip_address, )
         )
         return self.cur.fetchone()
 
