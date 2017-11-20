@@ -150,7 +150,7 @@ if args.refresh:
         except Exception as e:
             if args.verbose:
                 print('Failed to init client:{ip}: {error}'.format(
-                    ip=client_ip,
+                    ip=client_ip.ljust(12),
                     error=str(e)
                 ))
 
@@ -167,9 +167,9 @@ if args.refresh:
         # The _new attribute is only set on brand new clients not previously
         # in DB. This will get less and less common as DB builds up.
         if client._new:
-            if args.verbose:
-                print('Creating new client:{ip}'.format(
-                    ip=client.ip_address
+            if args.verbose > 1:
+                print('Client:{ip} created'.format(
+                    ip=client.ip_address.ljust(13)
                 ))
             client.enabled = True
 
@@ -185,7 +185,7 @@ if args.refresh:
         if int(packets_val) > client.last_packets:
             if args.verbose > 1:
                 print('Client:{ip} updated'.format(
-                    ip=client.ip_address
+                    ip=client.ip_address.ljust(13)
                 ))
 
             client.last_packets = packets_val
@@ -196,7 +196,7 @@ if args.refresh:
             # unique clients life-time.
             if args.verbose > 1:
                 print('Client:{ip} reset'.format(
-                    ip=client.ip_address
+                    ip=client.ip_address.ljust(13)
                 ))
 
             client.last_packets = packets_val
@@ -208,7 +208,7 @@ if args.refresh:
         if not client.last_activity and expired:
             if args.verbose:
                 print('Client:{ip} disabled, no activity logged'.format(
-                    ip=client.ip_address
+                    ip=client.ip_address.ljust(13)
                 ))
 
             client.enabled = False
@@ -223,7 +223,7 @@ if args.refresh:
                 if args.verbose:
                     print('Client:{ip} disabled, no activity since "{last_activity}"'.format(
                         last_activity=client.last_activity,
-                        ip=client.ip_address
+                        ip=client.ip_address.ljust(13)
                     ))
 
                 client.enabled = False
