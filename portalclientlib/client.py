@@ -41,8 +41,7 @@ class Client(object):
                 raise errors.StorageNotFound('Client not found')
         else:
             client_data = self.storage.get_client(
-                self._ip_address,
-                self.protocol
+                self._ip_address
             )
 
         # Init iptables
