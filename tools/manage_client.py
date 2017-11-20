@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-# Python helper tool to add IPtables rule using the iptc library. This must
-# of course run as root for iptc to work.
+# Python helper tool to add portal clients into ipset and DB via CLI.
+#
+# by Stefan Midjich
 
 from os import getuid
 from sys import exit
@@ -68,7 +69,7 @@ parser.add_argument(
     '--delete',
     default=False,
     action='store_true',
-    help='Delete the client from DB and firewall'
+    help='Delete the client from DB and firewall. Normally this is excessive.'
 )
 
 parser.add_argument(
@@ -102,8 +103,11 @@ if getuid() == 0:
 else:
     use_sudo = True
 
+# Sync clients and packet counters from ipset into storage.
+# This is a long process that ensures ipset and the DB have the same clients.
+# Also that old clients are disabled and that active clients have fresh data
+# in DB showing they're active.
 if args.refresh:
-    # Sync clients and packet counters from ipset into storage.
     proc = run_ipset(
         'list',
         config.get('portalclient', 'ipset_name'),
@@ -133,6 +137,9 @@ if args.refresh:
             bytes_val
         ) = line.split()
 
+        # Init a client instance, this will fetch an existing client matching
+        # the IP from DB and load its data. Or create a new with default
+        # values.
         try:
             client = Client(
                 storage=sr,
@@ -152,9 +159,13 @@ if args.refresh:
 
             continue
 
+        # Set the expired variable for future processing if the client has
+        # has expired.
         if current_time > client.expires:
             expired = True
 
+        # The _new attribute is only set on brand new clients not previously
+        # in DB. This will get less and less common as DB builds up.
         if client._new:
             if args.verbose:
                 print('Creating new client:{ip}'.format(
@@ -162,17 +173,15 @@ if args.refresh:
                 ))
             client.enabled = True
 
-        if not client.last_activity and expired:
-            if args.verbose:
-                print('Client:{ip} disabled, no activity ever logged'.format(
-                    ip=client.ip_address
-                ))
+        # In this case the client exists in ipset but is disabled in DB so
+        # we enable it and set a new expired date for it. As if it's a new
+        # (reset) client.
+        if not client.enabled:
+            client.enabled = True
+            client.expires = current_time
 
-            client.enabled = False
-            client.commit()
-            # No more processing for these types of clients.
-            continue
-
+        # If we have more packets in ipset output now than we had in DB we
+        # consider that an active client.
         if int(packets_val) > client.last_packets:
             if args.verbose > 1:
                 print('Client:{ip} updated'.format(
@@ -181,11 +190,36 @@ if args.refresh:
 
             client.last_packets = packets_val
             client.last_activity = current_time
+        elif int(packets_val) < client.last_packets:
+            # Otherwise this client could have been reset and in that case
+            # we reset its values. This should only happen once in every
+            # unique clients life-time.
+            if args.verbose > 1:
+                print('Client:{ip} reset'.format(
+                    ip=client.ip_address
+                ))
 
+            client.last_packets = packets_val
+            client.last_activity = current_time
+            client.expires = datetime.now() + timedelta(days=1)
+
+        # Here we handle fringe cases where clients have had no activity
+        # logged and are expired.
+        if not client.last_activity and expired:
+            if args.verbose:
+                print('Client:{ip} disabled, no activity logged'.format(
+                    ip=client.ip_address
+                ))
+
+            client.enabled = False
+
+        # If the client has had activity logged but is expired we need to
+        # ensure that we don't disable active clients by only disabling
+        # the ones with more than 1 day since their last activity.
         if client.last_activity and expired:
             active_diff = current_time - client.last_activity
 
-            if active_diff.days >= 1 and client.last_activity != current_time:
+            if active_diff.days >= 1:
                 if args.verbose:
                     print('Client:{ip} disabled, no activity since "{last_activity}"'.format(
                         last_activity=client.last_activity,
@@ -216,7 +250,9 @@ for src_ip in args.src_ip:
     else:
         client.enabled = True
 
-    if args.expires:
-        client.expires = args.expires
+        if args.expires:
+            client.expires = args.expires
+        else:
+            client.expires = datetime.now + timedelta(days=1)
 
     client.commit()
