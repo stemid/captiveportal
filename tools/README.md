@@ -6,4 +6,6 @@ A class is defined in client.py that handles creating and looking up clients.
 
 ## Examples
 
-See the cfg files for more examples.
+As of writing manage\_client.py uses the plugins.cfg configuration to keep the number of config files down.
+
+So the portalclient plugin and the postgres plugin sections are borrowed by this tool.
