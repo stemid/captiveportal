@@ -150,7 +150,7 @@ if args.refresh:
         except Exception as e:
             if args.verbose:
                 print('Failed to init client:{ip}: {error}'.format(
-                    ip=client_ip.ljust(12),
+                    ip=client_ip,
                     error=str(e)
                 ))
 
@@ -169,7 +169,7 @@ if args.refresh:
         if client._new:
             if args.verbose > 1:
                 print('Client:{ip} created'.format(
-                    ip=client.ip_address.ljust(13)
+                    ip=client.ip_address
                 ))
             client.enabled = True
 
@@ -177,6 +177,10 @@ if args.refresh:
         # we enable it and set a new expired date for it. As if it's a new
         # (reset) client.
         if not client.enabled:
+            if args.verbose:
+                print('Client:{ip} enabled'.format(
+                    ip=client.ip_address
+                ))
             client.enabled = True
             client.expires = current_time
 
@@ -185,7 +189,7 @@ if args.refresh:
         if int(packets_val) > client.last_packets:
             if args.verbose > 1:
                 print('Client:{ip} updated'.format(
-                    ip=client.ip_address.ljust(13)
+                    ip=client.ip_address
                 ))
 
             client.last_packets = packets_val
@@ -196,7 +200,7 @@ if args.refresh:
             # unique clients life-time.
             if args.verbose > 1:
                 print('Client:{ip} reset'.format(
-                    ip=client.ip_address.ljust(13)
+                    ip=client.ip_address
                 ))
 
             client.last_packets = packets_val
@@ -208,7 +212,7 @@ if args.refresh:
         if not client.last_activity and expired:
             if args.verbose:
                 print('Client:{ip} disabled, no activity logged'.format(
-                    ip=client.ip_address.ljust(13)
+                    ip=client.ip_address
                 ))
 
             client.enabled = False
@@ -223,7 +227,7 @@ if args.refresh:
                 if args.verbose:
                     print('Client:{ip} disabled, no activity since "{last_activity}"'.format(
                         last_activity=client.last_activity,
-                        ip=client.ip_address.ljust(13)
+                        ip=client.ip_address
                     ))
 
                 client.enabled = False
