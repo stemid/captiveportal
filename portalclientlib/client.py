@@ -22,10 +22,12 @@ class Client(object):
         self.ip_address = kw.pop('ip_address', '127.0.0.1')
         self.protocol = kw.pop('protocol', 'tcp')
 
+        expire_hours = kw.pop('expire_hours', 24)
+
         self._enabled = False
         self._last_packets = 0
         self._last_activity = None
-        self._expires = datetime.now() + timedelta(days=1)
+        self._expires = datetime.now() + timedelta(hours=expire_hours)
 
         self._new = False
         self._commit = False
