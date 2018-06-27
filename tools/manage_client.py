@@ -16,6 +16,8 @@ from portalclientlib.storage import StoragePostgres
 from portalclientlib.helpers import run_ipset
 
 
+DATETIME_FORMAT = '%Y-%m-%d.%H:%M'
+
 # Custom defined argparse types for dates
 def valid_date_type(arg_date_str):
     """custom argparse *date* type for user dates values given from the command line"""
@@ -29,10 +31,15 @@ def valid_date_type(arg_date_str):
 def valid_datetime_type(arg_datetime_str):
     """custom argparse type for user datetime values given from the command line"""
     try:
-        return datetime.strptime(arg_datetime_str, "%Y-%m-%d %H:%M")
+        return datetime.strptime(arg_datetime_str, DATETIME_FORMAT)
     except ValueError:
-        msg = "Given Datetime ({0}) not valid! Expected format, 'YYYY-MM-DD HH:mm'!".format(
-            arg_datetime_str)
+        msg = (
+            'Given Datetime ({arg_dt}) not valid! '
+            'Expected format, "{dt_format}"!'
+        ).format(
+            dt_format=DATETIME_FORMAT,
+            arg_dt=arg_datetime_str
+        )
         raise ArgumentTypeError(msg)
 
 
@@ -55,7 +62,9 @@ parser.add_argument(
     '--expires',
     type=valid_datetime_type,
     default=datetime.now() + timedelta(days=1),
-    help='Expiry date in format "YYYY-MM-DD HH:mm"'
+    help='Expiry date in format "{dt_format}"'.format(
+        dt_format=DATETIME_FORMAT
+    )
 )
 
 parser.add_argument(
